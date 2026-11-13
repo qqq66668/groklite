@@ -20,3 +20,5 @@ version is cut.
   expected field maps, plus one runnable example that continuous integration executes.
 - Registry: the syslog family (month, month day, time, timestamp, program and a
   composite base rule) joins the curated subset, with corpus rows for the RFC 3164 prefix.
+- Matching: `match_first` tries compiled programs in order and reports the first whole
+  line match, with a per-program step budget and one failure for the whole list.

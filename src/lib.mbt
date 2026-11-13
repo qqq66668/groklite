@@ -95,3 +95,23 @@ pub fn describe_match_error(error : @engine.MatchError) -> String {
 pub fn field_name(fields : @engine.Fields, index : Int) -> String {
   fields.name_at(index)
 }
+
+///| Try compiled programs in order and return the first one that matches.
+pub fn match_first(programs : Array[@compile.Program], line : String) -> Result[@engine.FirstMatch, @engine.MatchError] {
+  @engine.match_first(programs, line)
+}
+
+///| Try compiled programs in order, with an explicit step budget per program.
+pub fn match_first_with_limit(programs : Array[@compile.Program], line : String, step_limit : Int) -> Result[@engine.FirstMatch, @engine.MatchError] {
+  @engine.match_first_with_limit(programs, line, step_limit)
+}
+
+///| Which program matched, counted from zero in the order it was tried.
+pub fn first_pattern_index(hit : @engine.FirstMatch) -> Int {
+  hit.first_pattern_index()
+}
+
+///| The field table produced by the matching program.
+pub fn first_fields(hit : @engine.FirstMatch) -> @engine.Fields {
+  hit.first_matched_fields()
+}

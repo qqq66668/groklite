@@ -108,3 +108,33 @@ test "the syslog family reads one rfc3164 prefix" {
 test "a composite pattern matches without claiming a slot" {
   assert_eq(render_fields("%{SYSLOGBASE} %{WORD:msg}", "Dec 31 23:59:59 db-1 kernel panic"), "msg=panic")
 }
+
+///|
+test "a stream of mixed formats lands on the first pattern that fits" {
+  let three = match @src.compile_builtin("%{STATUS:code}") {
+    Ok(program) => program
+    Err(error) => abort(@src.describe_compile_error(error))
+  }
+  let plain = match @src.compile_builtin("%{NUMBER:num}") {
+    Ok(program) => program
+    Err(error) => abort(@src.describe_compile_error(error))
+  }
+  let programs = [three, plain]
+  match @src.match_first(programs, "404") {
+    Ok(hit) => {
+      assert_eq(@src.first_pattern_index(hit), 0)
+      let fields = @src.first_fields(hit)
+      assert_eq(@src.field_total(fields), 1)
+      assert_eq(@src.field_value(fields, "code"), Some("404"))
+    }
+    Err(error) => abort(@src.describe_match_error(error))
+  }
+  match @src.match_first(programs, "42") {
+    Ok(hit) => {
+      assert_eq(@src.first_pattern_index(hit), 1)
+      let fields = @src.first_fields(hit)
+      assert_eq(@src.field_value(fields, "num"), Some("42"))
+    }
+    Err(error) => abort(@src.describe_match_error(error))
+  }
+}

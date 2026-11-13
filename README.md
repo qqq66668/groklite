@@ -65,6 +65,9 @@ The same example runs in continuous integration, so this snippet is verified out
 a claim. `src/corpus_test.mbt` is the black-box test file: it drives the public facade from a corpus
 table of input line plus expected field map.
 
+A stream normally mixes formats, so `match_first` takes compiled programs in order and
+returns the first that matches the whole line, or one failure for the whole list. A step
+budget failure stops the search instead of being read as a miss.
 ## What is next
 
 1. A registry with a curated subset: access logs, syslog, CEF.
