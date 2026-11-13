@@ -1,0 +1,19 @@
+# Build output
+_build/
+target/
+*.wasm
+*.o
+*.obj
+*.mbti
+
+# Local package cache
+.mooncakes/
+
+# Machine-local state: never committed, never scanned
+.pii-blocklist
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

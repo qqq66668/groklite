@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.mbt text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+*.log text eol=lf
+*.wasm binary
