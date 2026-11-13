@@ -18,6 +18,15 @@ a registry gives each name a rule, and one call turns a line into fields. Patter
 data, so adding a format is a table entry with a corpus line behind it, not a new
 regular expression in a new service.
 
+## Demo
+
+One recording, captured from a real run of both examples:
+
+![Both examples in one run](docs/demo.gif)
+
+The first block reads an access-log line; the second reads a syslog line with the
+syslog family. Nothing in the recording is typed by hand.
+
 ## Shape
 
 Four packages with one direction of dependency:
