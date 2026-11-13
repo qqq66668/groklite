@@ -10,3 +10,5 @@ version is cut.
 - Pattern syntax layer: parse pattern text into literal and reference segments.
 - Pattern registry: curated built-in subset with recursive expansion, cycle, depth
   and nested-field errors.
+- Rule grammar: bracket classes, shorthand escapes, groups, alternation, anchors and
+  bounded repetition lowered into a node tree with positioned errors.

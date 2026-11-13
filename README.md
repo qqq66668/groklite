@@ -40,7 +40,9 @@ unterminated reference, an empty name, an empty field and a character outside th
 allowed set.
 
 The registry adds a curated ten-entry built-in subset plus recursive expansion with
-cycle, depth and nested-field errors. Matching is not implemented yet. `docs/limits.md` describes the grammar the matcher
+cycle, depth and nested-field errors. The rule grammar reads bracket classes, shorthand escapes, groups, alternation,
+anchors and bounded repetition into a node tree, with every malformed body refused at
+the offset that caused it. Matching is not implemented yet. `docs/limits.md` describes the grammar the matcher
 will accept, so the boundary is written down before the code exists.
 
 ## What is next
