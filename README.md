@@ -39,7 +39,8 @@ tests cover literals, references with and without a field, mixed patterns, an
 unterminated reference, an empty name, an empty field and a character outside the
 allowed set.
 
-Matching is not implemented yet. `docs/limits.md` describes the grammar the matcher
+The registry adds a curated ten-entry built-in subset plus recursive expansion with
+cycle, depth and nested-field errors. Matching is not implemented yet. `docs/limits.md` describes the grammar the matcher
 will accept, so the boundary is written down before the code exists.
 
 ## What is next

@@ -24,3 +24,21 @@ pub fn describe_error(error : @syntax.ParseError) -> String {
 pub fn segment_count(pattern : @syntax.Pattern) -> Int {
   pattern.segment_count()
 }
+
+///|
+/// The curated built-in registry.
+pub fn builtin_registry() -> @registry.Registry {
+  @registry.builtin()
+}
+
+///|
+/// Expand one named pattern into a body with no remaining references.
+pub fn resolve_pattern(registry : @registry.Registry, name : String) -> Result[String, @registry.RegistryError] {
+  @registry.resolve(registry, name)
+}
+
+///|
+/// Render a registry failure as one stable line.
+pub fn describe_registry_error(error : @registry.RegistryError) -> String {
+  @registry.describe_registry_error(error)
+}
