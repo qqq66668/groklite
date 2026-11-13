@@ -39,8 +39,8 @@ tests cover literals, references with and without a field, mixed patterns, an
 unterminated reference, an empty name, an empty field and a character outside the
 allowed set.
 
-The registry adds a curated ten-entry built-in subset plus recursive expansion with
-cycle, depth and nested-field errors. The rule grammar reads bracket classes, shorthand escapes, groups, alternation,
+The registry adds a curated sixteen-entry built-in subset plus recursive expansion with
+cycle, depth and nested-field errors. The syslog family then adds month day, time, timestamp, program and a composite base rule, each exercised by a corpus row. The rule grammar reads bracket classes, shorthand escapes, groups, alternation,
 anchors and bounded repetition into a node tree, with every malformed body refused at
 the offset that caused it. Compilation turns that tree plus the registry into a program with numbered capture
 slots and a field table, refusing an unknown rule, a malformed rule body, a field

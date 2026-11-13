@@ -98,3 +98,13 @@ test "a step budget failure is reported through the facade" {
     }
   }
 }
+
+///|
+test "the syslog family reads one rfc3164 prefix" {
+  assert_eq(render_fields("%{SYSLOGTIMESTAMP:ts} %{HOST:host} %{PROG:prog}", "Jan  5 14:22:01 web-01 sshd"), "ts=Jan  5 14:22:01|host=web-01|prog=sshd")
+}
+
+///|
+test "a composite pattern matches without claiming a slot" {
+  assert_eq(render_fields("%{SYSLOGBASE} %{WORD:msg}", "Dec 31 23:59:59 db-1 kernel panic"), "msg=panic")
+}
