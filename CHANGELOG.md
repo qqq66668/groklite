@@ -14,3 +14,5 @@ version is cut.
   bounded repetition lowered into a node tree with positioned errors.
 - Compilation: pattern segments lowered into a capture-numbered program plus a
   field table, with duplicate-field, unknown-rule and empty-pattern errors.
+- Matching: one line executed against a compiled program into a field table, with a
+  whole-line rule, a bounded step budget and named field lookups.

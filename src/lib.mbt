@@ -60,3 +60,33 @@ pub fn describe_compile_error(error : @compile.CompileError) -> String {
 pub fn render_program(program : @compile.Program) -> String {
   @compile.render_program(program)
 }
+
+///| Compile pattern text against the curated built-in registry.
+pub fn compile_builtin(pattern_text : String) -> Result[@compile.Program, @compile.CompileError] {
+  @engine.compile_builtin(pattern_text)
+}
+
+///| Match one line against a compiled program.
+pub fn match_line(program : @compile.Program, line : String) -> Result[@engine.Fields, @engine.MatchError] {
+  @engine.match_line(program, line)
+}
+
+///| Match one line against a compiled program with an explicit step budget.
+pub fn match_line_with_limit(program : @compile.Program, line : String, step_limit : Int) -> Result[@engine.Fields, @engine.MatchError] {
+  @engine.match_line_with_limit(program, line, step_limit)
+}
+
+///| The value of a named field, or none when the pattern does not declare it.
+pub fn field_value(fields : @engine.Fields, name : String) -> String? {
+  fields.get(name)
+}
+
+///| Number of fields in one match result.
+pub fn field_total(fields : @engine.Fields) -> Int {
+  fields.size()
+}
+
+///| Render a match failure as one stable line.
+pub fn describe_match_error(error : @engine.MatchError) -> String {
+  @engine.describe_match_error(error)
+}

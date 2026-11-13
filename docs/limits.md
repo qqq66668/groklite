@@ -39,6 +39,10 @@ Not supported, and rejected at compile time where the construct is recognised:
 
 - A single pass is bounded by a step budget, not by wall-clock time. Exhaustion is
   an error, not a hang and not a partial result.
+- A repetition whose body consumes no characters is not repeated, so a starred empty
+  group cannot loop forever.
+- Matching is whole-line. A pattern that matches only a prefix reports no match; a
+  caller that wants a prefix match anchors the pattern itself.
 - No throughput claim is made here. A number appears only after a benchmark target
   exists and runs in continuous integration.
 

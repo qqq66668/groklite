@@ -226,3 +226,13 @@ pub fn describe_compile_error(error : CompileError) -> String {
     EmptyPattern => "empty pattern"
   }
 }
+
+///| The instruction tree this program executes.
+pub fn Program::root(self : Program) -> Instr {
+  self.instr
+}
+
+///| The field names, indexed by capture slot.
+pub fn Program::field_names(self : Program) -> Array[String] {
+  self.fields
+}

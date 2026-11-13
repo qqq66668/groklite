@@ -44,7 +44,7 @@ cycle, depth and nested-field errors. The rule grammar reads bracket classes, sh
 anchors and bounded repetition into a node tree, with every malformed body refused at
 the offset that caused it. Compilation turns that tree plus the registry into a program with numbered capture
 slots and a field table, refusing an unknown rule, a malformed rule body, a field
-declared twice and an empty pattern. Matching is not implemented yet. `docs/limits.md` describes the grammar the matcher
+declared twice and an empty pattern. Matching runs that program over one line and returns a field table keyed by the names the pattern declares. A line must match in full; a partial match is a failure, not a best-effort result. Every pass is bounded by a step budget, and running out is reported as an error rather than a hang. `docs/limits.md` describes the grammar the matcher
 will accept, so the boundary is written down before the code exists.
 
 ## What is next
