@@ -1,0 +1,5 @@
+import {
+  "qqq66668/groklite/src" @src,
+}
+
+pkgtype(kind: "executable")

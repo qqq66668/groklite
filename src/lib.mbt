@@ -90,3 +90,8 @@ pub fn field_total(fields : @engine.Fields) -> Int {
 pub fn describe_match_error(error : @engine.MatchError) -> String {
   @engine.describe_match_error(error)
 }
+
+///| The field name at one index, in pattern order.
+pub fn field_name(fields : @engine.Fields, index : Int) -> String {
+  fields.name_at(index)
+}

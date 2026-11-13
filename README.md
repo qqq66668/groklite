@@ -47,6 +47,24 @@ slots and a field table, refusing an unknown rule, a malformed rule body, a fiel
 declared twice and an empty pattern. Matching runs that program over one line and returns a field table keyed by the names the pattern declares. A line must match in full; a partial match is a failure, not a best-effort result. Every pass is bounded by a step budget, and running out is reported as an error rather than a hang. `docs/limits.md` describes the grammar the matcher
 will accept, so the boundary is written down before the code exists.
 
+## Run the example
+
+```
+moon run examples/nginx_to_json
+```
+
+It prints the three fields of one access-log line:
+
+```
+client=10.0.0.7
+method=GET
+status=404
+```
+
+The same example runs in continuous integration, so this snippet is verified output, not
+a claim. `src/corpus_test.mbt` is the black-box test file: it drives the public facade from a corpus
+table of input line plus expected field map.
+
 ## What is next
 
 1. A registry with a curated subset: access logs, syslog, CEF.

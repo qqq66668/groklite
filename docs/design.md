@@ -44,7 +44,7 @@ regular-expression package.
 ## Testing shape
 
 - Unit tests sit next to the package they test.
-- `test/` is a black-box package driven by corpus files: one input line per case
-  plus the expected field map, so a behaviour change appears as a data diff.
+- `src/corpus_test.mbt` is a black-box test file driven by a corpus table: one input line per case
+  plus the expected field map, so a behaviour change appears as one row of data.
 - The example under `examples/` is compiled and run in continuous integration,
   which keeps the README honest.

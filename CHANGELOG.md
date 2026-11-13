@@ -16,3 +16,5 @@ version is cut.
   field table, with duplicate-field, unknown-rule and empty-pattern errors.
 - Matching: one line executed against a compiled program into a field table, with a
   whole-line rule, a bounded step budget and named field lookups.
+- Corpus: a black-box test package driving the facade from a table of input lines and
+  expected field maps, plus one runnable example that continuous integration executes.

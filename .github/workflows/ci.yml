@@ -23,3 +23,5 @@ jobs:
         run: moon build
       - name: test
         run: moon test
+      - name: example
+        run: moon run examples/nginx_to_json
