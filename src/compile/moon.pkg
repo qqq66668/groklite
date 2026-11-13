@@ -1,1 +1,4 @@
-
+import {
+  "qqq66668/groklite/src/syntax" @syntax,
+  "qqq66668/groklite/src/registry" @registry,
+}

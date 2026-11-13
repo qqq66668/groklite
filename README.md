@@ -42,7 +42,9 @@ allowed set.
 The registry adds a curated ten-entry built-in subset plus recursive expansion with
 cycle, depth and nested-field errors. The rule grammar reads bracket classes, shorthand escapes, groups, alternation,
 anchors and bounded repetition into a node tree, with every malformed body refused at
-the offset that caused it. Matching is not implemented yet. `docs/limits.md` describes the grammar the matcher
+the offset that caused it. Compilation turns that tree plus the registry into a program with numbered capture
+slots and a field table, refusing an unknown rule, a malformed rule body, a field
+declared twice and an empty pattern. Matching is not implemented yet. `docs/limits.md` describes the grammar the matcher
 will accept, so the boundary is written down before the code exists.
 
 ## What is next

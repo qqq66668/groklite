@@ -42,3 +42,21 @@ pub fn resolve_pattern(registry : @registry.Registry, name : String) -> Result[S
 pub fn describe_registry_error(error : @registry.RegistryError) -> String {
   @registry.describe_registry_error(error)
 }
+
+///|
+/// Compile pattern text into a program and its field table.
+pub fn compile(registry : @registry.Registry, pattern_text : String) -> Result[@compile.Program, @compile.CompileError] {
+  @compile.compile(registry, pattern_text)
+}
+
+///|
+/// Render a compile failure as one stable line.
+pub fn describe_compile_error(error : @compile.CompileError) -> String {
+  @compile.describe_compile_error(error)
+}
+
+///|
+/// Render a compiled program, field table included.
+pub fn render_program(program : @compile.Program) -> String {
+  @compile.render_program(program)
+}
