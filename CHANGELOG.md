@@ -22,3 +22,5 @@ version is cut.
   composite base rule) joins the curated subset, with corpus rows for the RFC 3164 prefix.
 - Matching: `match_first` tries compiled programs in order and reports the first whole
   line match, with a per-program step budget and one failure for the whole list.
+- Example: `examples/syslog_to_json` parses a syslog line with the first matching
+  pattern, and continuous integration runs both examples.

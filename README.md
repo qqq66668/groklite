@@ -68,6 +68,25 @@ table of input line plus expected field map.
 A stream normally mixes formats, so `match_first` takes compiled programs in order and
 returns the first that matches the whole line, or one failure for the whole list. A step
 budget failure stops the search instead of being read as a miss.
+## A second format
+
+A stream rarely carries one format. `examples/syslog_to_json` compiles two patterns and
+tries them in order, printing the fields of the first one that matches the whole line:
+
+```
+moon run examples/syslog_to_json
+```
+
+```
+pattern=0
+ts=Jan  5 14:22:01
+host=web-01
+prog=sshd
+msg=panic
+```
+
+Both examples run in continuous integration.
+
 ## What is next
 
 1. A registry with a curated subset: access logs, syslog, CEF.

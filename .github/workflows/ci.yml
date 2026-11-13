@@ -23,5 +23,7 @@ jobs:
         run: moon build
       - name: test
         run: moon test
-      - name: example
+      - name: example access log
         run: moon run examples/nginx_to_json
+      - name: example syslog
+        run: moon run examples/syslog_to_json
