@@ -96,13 +96,34 @@ msg=panic
 
 Both examples run in continuous integration.
 
-## What is next
+## Provenance
 
-1. A registry with a curated subset: access logs, syslog, CEF.
-2. Compilation into a program with numbered slots plus a field table.
-3. Matching one line and returning a field map.
-4. A corpus-driven test package and one runnable example.
+The pattern syntax follows grok, the form Logstash popularised: a rule name in braces,
+optionally followed by the field it should fill. Several rule names in the built-in
+registry (`WORD`, `NUMBER`, `INT`, `SPACE`, `NOTSPACE`, `HOST`, `IP`, `IPORHOST`,
+`USER`, `MONTH`, `MONTHDAY`, `TIME`, `SYSLOGTIMESTAMP`, `PROG`, `SYSLOGBASE`) come from
+the vocabulary of logstash-patterns-core
+(https://github.com/logstash-plugins/logstash-patterns-core, Apache-2.0). Names such as
+`STATUS` are written for this project.
 
+No code and no pattern body is copied from that collection. Every rule here is written
+in this repository, restricted to the grammar in `docs/limits.md`, and exercised by a row
+in `src/corpus_test.mbt`. What is shared is the vocabulary, not the implementation; where
+this library refuses a construct that collection relies on, `docs/limits.md` records the
+refusal.
+
+## Verify the claims
+
+```
+moon check --deny-warn
+moon test
+moon run examples/nginx_to_json
+moon run examples/syslog_to_json
+bash tools/check_no_pii.sh
+```
+
+Continuous integration runs the same five steps, so a claim that drifts away from the
+code fails the build instead of aging quietly in this file.
 ## Boundaries
 
 No file input, no network input, no log shipping, no type coercion: a caller hands in

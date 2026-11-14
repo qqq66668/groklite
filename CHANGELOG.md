@@ -5,6 +5,11 @@ version is cut.
 
 ## Unreleased
 
+Nothing yet.
+
+## 0.1.0 - 2026-11-13
+
+- Published to mooncakes.io as `qqq66668/groklite@0.1.0`.
 - Repository baseline: licence, line-ending policy, editor policy, decision log and
   the hygiene gate.
 - Pattern syntax layer: parse pattern text into literal and reference segments.
