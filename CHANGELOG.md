@@ -5,7 +5,8 @@ version is cut.
 
 ## Unreleased
 
-Nothing yet.
+- Documentation: `README.md` gained an install and usage section for
+  consumers of the published package, with the call shape the example uses.
 
 ## 0.1.1 - 2026-11-14
 

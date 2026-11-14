@@ -27,6 +27,46 @@ One recording, captured from a real run of both examples:
 The first block reads an access-log line; the second reads a syslog line with the
 syslog family. Nothing in the recording is typed by hand.
 
+## Install
+
+```
+moon add qqq66668/groklite
+```
+
+The module has one package with public exports, `qqq66668/groklite/src`. A consumer
+declares it in `moon.pkg`:
+
+```
+import {
+  "qqq66668/groklite/src" @groklite,
+}
+```
+
+One call compiles a pattern against the curated rules; one call matches a line:
+
+```moonbit
+fn main {
+  let pattern = "%{IP:client} %{WORD:method} %{STATUS:status}"
+  match @groklite.compile_builtin(pattern) {
+    Err(error) => println(@groklite.describe_compile_error(error))
+    Ok(program) => {
+      match @groklite.match_line(program, "10.0.0.7 GET 404") {
+        Err(error) => println(@groklite.describe_match_error(error))
+        Ok(fields) => {
+          match @groklite.field_value(fields, "status") {
+            Some(value) => println(value)
+            None => println("no status field")
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+It prints `404`. Those are the same three calls `examples/nginx_to_json` makes,
+and continuous integration runs that example, so the shape of the call stays honest.
+
 ## Shape
 
 Four packages with one direction of dependency:
