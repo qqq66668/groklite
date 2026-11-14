@@ -5,18 +5,16 @@ version is cut.
 
 ## Unreleased
 
+Nothing yet.
+
+## 0.1.2 - 2026-11-14
+
 - Build: `moon fmt` is applied across the module and a formatting gate in CI and in
-  `justfile` fails the run when the rewrite moves anything.
-
 - Continuous integration: a target matrix runs the suite again on wasm-gc and js, so
-  the claim that behaviour does not depend on the backend is checked rather than
-  asserted.
 - Documentation: `docs/limits.md` no longer promises a future throughput number and
-  states the shape of the cost instead.
-
 - Documentation: `README.md` gained an install and usage section for
-  consumers of the published package, with the call shape the example uses.
-
+- Release: the published package carries the install section, the target matrix and
+  the edited limits file, so the package and the repository no longer disagree.
 ## 0.1.1 - 2026-11-14
 
 - Documentation: `README.md` now states the shipped capability set instead of the
