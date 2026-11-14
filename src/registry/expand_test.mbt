@@ -14,7 +14,10 @@ test "a leaf pattern resolves to its own class" {
 ///|
 test "nested references disappear from the expanded body" {
   match @registry.resolve(@registry.builtin(), "IPORHOST") {
-    Ok(text) => assert_eq(text, "(?:[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}|[A-Za-z0-9_.-]+)")
+    Ok(text) =>
+      assert_eq(
+        text, "(?:[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}|[A-Za-z0-9_.-]+)",
+      )
     Err(error) => abort(@registry.describe_registry_error(error))
   }
 }
@@ -23,7 +26,11 @@ test "nested references disappear from the expanded body" {
 test "an unknown name is reported with the name" {
   match @registry.resolve(@registry.builtin(), "NOSUCH") {
     Ok(_) => abort("expected an unknown pattern error")
-    Err(error) => assert_eq(@registry.describe_registry_error(error), "unknown pattern: NOSUCH")
+    Err(error) =>
+      assert_eq(
+        @registry.describe_registry_error(error),
+        "unknown pattern: NOSUCH",
+      )
   }
 }
 
@@ -34,7 +41,11 @@ test "a reference cycle is reported instead of recursing forever" {
   registry.add("B", "%{A}")
   match @registry.resolve(registry, "A") {
     Ok(_) => abort("expected a cycle error")
-    Err(error) => assert_eq(@registry.describe_registry_error(error), "pattern cycle through: A")
+    Err(error) =>
+      assert_eq(
+        @registry.describe_registry_error(error),
+        "pattern cycle through: A",
+      )
   }
 }
 
@@ -50,7 +61,11 @@ test "a chain deeper than the limit is an error, not a crash" {
   registry.add("L40", "end")
   match @registry.resolve(registry, "L0") {
     Ok(_) => abort("expected a depth error")
-    Err(error) => assert_eq(@registry.describe_registry_error(error), "pattern expansion exceeded depth limit: 32")
+    Err(error) =>
+      assert_eq(
+        @registry.describe_registry_error(error),
+        "pattern expansion exceeded depth limit: 32",
+      )
   }
 }
 
@@ -61,7 +76,11 @@ test "a field on a nested reference is refused, not silently dropped" {
   registry.add("IP", "x")
   match @registry.resolve(registry, "OUTER") {
     Ok(_) => abort("expected a nested field error")
-    Err(error) => assert_eq(@registry.describe_registry_error(error), "field name on a nested reference at offset 0 is not supported")
+    Err(error) =>
+      assert_eq(
+        @registry.describe_registry_error(error),
+        "field name on a nested reference at offset 0 is not supported",
+      )
   }
 }
 
@@ -71,7 +90,11 @@ test "an unterminated reference inside a body is reported" {
   registry.add("BROKEN", "%{IP")
   match @registry.resolve(registry, "BROKEN") {
     Ok(_) => abort("expected an unterminated reference error")
-    Err(error) => assert_eq(@registry.describe_registry_error(error), "unterminated reference at offset 0")
+    Err(error) =>
+      assert_eq(
+        @registry.describe_registry_error(error),
+        "unterminated reference at offset 0",
+      )
   }
 }
 

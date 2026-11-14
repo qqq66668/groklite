@@ -12,10 +12,11 @@ pub enum ParseErrorKind {
 /// A parse failure: what went wrong, where, and the text it came from.
 pub struct ParseError {
   kind : ParseErrorKind
-  offset : Int
+  offset : Int32
   source : String
 }
 
+///|
 fn headline(kind : ParseErrorKind) -> String {
   match kind {
     UnterminatedReference => "unterminated pattern reference"
@@ -35,5 +36,15 @@ pub fn describe_error(error : ParseError) -> String {
     indent = indent + " "
     index = index + 1
   }
-  "pattern error at offset " + error.offset.to_string() + ": " + headline(error.kind) + "\n" + "  " + error.source + "\n" + "  " + indent + "^"
+  "pattern error at offset " +
+  error.offset.to_string() +
+  ": " +
+  headline(error.kind) +
+  "\n" +
+  "  " +
+  error.source +
+  "\n" +
+  "  " +
+  indent +
+  "^"
 }

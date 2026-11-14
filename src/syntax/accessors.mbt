@@ -1,6 +1,6 @@
 ///|
 /// The segment at an index. Out-of-range indices are a programming error.
-pub fn Pattern::segment_at(self : Pattern, index : Int) -> Segment {
+pub fn Pattern::segment_at(self : Pattern, index : Int32) -> Segment {
   self.segments[index]
 }
 

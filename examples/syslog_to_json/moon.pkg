@@ -1,5 +1,5 @@
 import {
-  "qqq66668/groklite/src" @src,
+  "qqq66668/groklite/src",
 }
 
 pkgtype(kind: "executable")

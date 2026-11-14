@@ -3,9 +3,9 @@
 pub enum RegistryError {
   UnknownPattern(String)
   Cycle(String)
-  DepthExceeded(Int)
-  NestedFieldUnsupported(Int)
-  UnterminatedReference(Int)
+  DepthExceeded(Int32)
+  NestedFieldUnsupported(Int32)
+  UnterminatedReference(Int32)
 }
 
 ///|
@@ -22,7 +22,7 @@ pub struct Registry {
 ///|
 /// An empty registry.
 pub fn empty() -> Registry {
-  let registry : Registry = { names : [], bodies : [] }
+  let registry : Registry = { names: [], bodies: [], }
   registry
 }
 
@@ -36,10 +36,11 @@ pub fn Registry::add(self : Registry, name : String, body : String) -> Unit {
 
 ///|
 /// Number of stored entries, including any shadowed duplicates.
-pub fn Registry::size(self : Registry) -> Int {
+pub fn Registry::size(self : Registry) -> Int32 {
   self.names.length()
 }
 
+///|
 fn find(registry : Registry, name : String) -> (Bool, String) {
   let total = registry.names.length()
   let mut index = 0
@@ -55,6 +56,7 @@ fn find(registry : Registry, name : String) -> (Bool, String) {
   (hit, body)
 }
 
+///|
 fn contains_name(path : Array[String], name : String) -> Bool {
   let mut index = 0
   let mut hit = false
@@ -67,6 +69,7 @@ fn contains_name(path : Array[String], name : String) -> Bool {
   hit
 }
 
+///|
 fn append_name(path : Array[String], name : String) -> Array[String] {
   let next : Array[String] = []
   for item in path {
@@ -76,7 +79,13 @@ fn append_name(path : Array[String], name : String) -> Array[String] {
   next
 }
 
-fn expand_body(registry : Registry, body : String, path : Array[String], max_depth : Int) -> Result[String, RegistryError] {
+///|
+fn expand_body(
+  registry : Registry,
+  body : String,
+  path : Array[String],
+  max_depth : Int32,
+) -> Result[String, RegistryError] {
   if path.length() > max_depth {
     return Err(DepthExceeded(max_depth))
   }
@@ -114,12 +123,8 @@ fn expand_body(registry : Registry, body : String, path : Array[String], max_dep
       literal = StringBuilder()
       let outcome = expand_reference(registry, name, path, max_depth)
       match outcome {
-        Ok(text) => {
-          result = result + text
-        }
-        Err(error) => {
-          return Err(error)
-        }
+        Ok(text) => result = result + text
+        Err(error) => return Err(error)
       }
       in_reference = false
     } else if c == ':' {
@@ -139,7 +144,13 @@ fn expand_body(registry : Registry, body : String, path : Array[String], max_dep
   Ok(result)
 }
 
-fn expand_reference(registry : Registry, name : String, path : Array[String], max_depth : Int) -> Result[String, RegistryError] {
+///|
+fn expand_reference(
+  registry : Registry,
+  name : String,
+  path : Array[String],
+  max_depth : Int32,
+) -> Result[String, RegistryError] {
   if contains_name(path, name) {
     return Err(Cycle(name))
   }
@@ -155,7 +166,10 @@ fn expand_reference(registry : Registry, name : String, path : Array[String], ma
 ///
 /// A field name on a nested reference is an error rather than a silent drop: a
 /// caller who writes one is asking for a capture this design cannot deliver.
-pub fn resolve(registry : Registry, name : String) -> Result[String, RegistryError] {
+pub fn resolve(
+  registry : Registry,
+  name : String,
+) -> Result[String, RegistryError] {
   let path : Array[String] = []
   expand_reference(registry, name, path, 32)
 }
@@ -166,8 +180,13 @@ pub fn describe_registry_error(error : RegistryError) -> String {
   match error {
     UnknownPattern(name) => "unknown pattern: " + name
     Cycle(name) => "pattern cycle through: " + name
-    DepthExceeded(limit) => "pattern expansion exceeded depth limit: " + limit.to_string()
-    NestedFieldUnsupported(offset) => "field name on a nested reference at offset " + offset.to_string() + " is not supported"
-    UnterminatedReference(offset) => "unterminated reference at offset " + offset.to_string()
+    DepthExceeded(limit) =>
+      "pattern expansion exceeded depth limit: " + limit.to_string()
+    NestedFieldUnsupported(offset) =>
+      "field name on a nested reference at offset " +
+      offset.to_string() +
+      " is not supported"
+    UnterminatedReference(offset) =>
+      "unterminated reference at offset " + offset.to_string()
   }
 }

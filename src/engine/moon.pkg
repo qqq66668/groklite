@@ -1,4 +1,4 @@
 import {
-  "qqq66668/groklite/src/compile" @compile,
-  "qqq66668/groklite/src/registry" @registry,
+  "qqq66668/groklite/src/compile",
+  "qqq66668/groklite/src/registry",
 }

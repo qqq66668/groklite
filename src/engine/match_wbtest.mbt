@@ -1,16 +1,22 @@
+///|
 fn backslash_text() -> String {
   let sb : StringBuilder = StringBuilder()
   sb.write_char('\\')
   sb.to_string()
 }
 
-fn compile_of(registry : @registry.Registry, pattern_text : String) -> @compile.Program {
+///|
+fn compile_of(
+  registry : @registry.Registry,
+  pattern_text : String,
+) -> @compile.Program {
   match @compile.compile(registry, pattern_text) {
     Ok(program) => program
     Err(error) => abort(@compile.describe_compile_error(error))
   }
 }
 
+///|
 fn expect_match(program : @compile.Program, line : String) -> Fields {
   match match_line(program, line) {
     Ok(fields) => fields
@@ -24,7 +30,8 @@ test "a literal pattern must consume the whole line" {
   assert_eq(expect_match(program, "hi").size(), 0)
   match match_line(program, "ho") {
     Ok(_) => abort("expected no match")
-    Err(error) => assert_eq(describe_match_error(error), "line does not match the pattern")
+    Err(error) =>
+      assert_eq(describe_match_error(error), "line does not match the pattern")
   }
 }
 
@@ -116,13 +123,20 @@ test "a tiny step budget is reported rather than ignored" {
   let program = compile_of(@registry.builtin(), "%{NUMBER:n}")
   match match_line_with_limit(program, "123", 1) {
     Ok(_) => abort("expected the budget to run out")
-    Err(error) => assert_eq(describe_match_error(error), "pattern exceeded the step budget of 1 steps")
+    Err(error) =>
+      assert_eq(
+        describe_match_error(error),
+        "pattern exceeded the step budget of 1 steps",
+      )
   }
 }
 
 ///|
 test "a realistic access-log line fills three fields" {
-  let program = compile_of(@registry.builtin(), "%{IP:client} %{WORD:method} %{STATUS:status}")
+  let program = compile_of(
+    @registry.builtin(),
+    "%{IP:client} %{WORD:method} %{STATUS:status}",
+  )
   let fields = expect_match(program, "10.1.2.3 GET 200")
   assert_eq(fields.value_at(0), "10.1.2.3")
   assert_eq(fields.value_at(1), "GET")

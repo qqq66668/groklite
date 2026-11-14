@@ -1,11 +1,19 @@
-fn expect_compile(registry : @registry.Registry, pattern_text : String) -> Program {
+///|
+fn expect_compile(
+  registry : @registry.Registry,
+  pattern_text : String,
+) -> Program {
   match compile(registry, pattern_text) {
     Ok(program) => program
     Err(error) => abort(describe_compile_error(error))
   }
 }
 
-fn expect_compile_error(registry : @registry.Registry, pattern_text : String) -> CompileError {
+///|
+fn expect_compile_error(
+  registry : @registry.Registry,
+  pattern_text : String,
+) -> CompileError {
   match compile(registry, pattern_text) {
     Ok(_) => abort("expected a compile error for: " + pattern_text)
     Err(error) => error
@@ -26,7 +34,10 @@ test "a named reference becomes a numbered capture" {
   let program = expect_compile(registry, "x%{A:first}y")
   assert_eq(program.field_count(), 1)
   assert_eq(program.field_at(0), "first")
-  assert_eq(render_program(program), "seq(ch(x) cap(0,ch(a)) ch(y)) fields=[first]")
+  assert_eq(
+    render_program(program),
+    "seq(ch(x) cap(0,ch(a)) ch(y)) fields=[first]",
+  )
 }
 
 ///|
@@ -38,7 +49,10 @@ test "two fields are numbered in pattern order" {
   assert_eq(program.field_count(), 2)
   assert_eq(program.field_at(0), "one")
   assert_eq(program.field_at(1), "two")
-  assert_eq(render_program(program), "seq(cap(0,ch(a)) ch(-) cap(1,ch(b))) fields=[one,two]")
+  assert_eq(
+    render_program(program),
+    "seq(cap(0,ch(a)) ch(-) cap(1,ch(b))) fields=[one,two]",
+  )
 }
 
 ///|
@@ -68,7 +82,10 @@ test "a nested field is reported through the registry" {
   registry.add("OUTER", "%{IP:client}")
   registry.add("IP", "x")
   let error = expect_compile_error(registry, "%{OUTER:y}")
-  assert_eq(describe_compile_error(error), "registry: field name on a nested reference at offset 0 is not supported")
+  assert_eq(
+    describe_compile_error(error),
+    "registry: field name on a nested reference at offset 0 is not supported",
+  )
 }
 
 ///|
@@ -76,7 +93,10 @@ test "a malformed rule body is reported at its offset" {
   let registry = @registry.empty()
   registry.add("BAD", "[abc")
   let error = expect_compile_error(registry, "%{BAD:x}")
-  assert_eq(describe_compile_error(error), "rule: unbalanced character class at offset 0")
+  assert_eq(
+    describe_compile_error(error),
+    "rule: unbalanced character class at offset 0",
+  )
 }
 
 ///|
@@ -88,12 +108,18 @@ test "an empty pattern is refused" {
 ///|
 test "malformed pattern text keeps its caret line" {
   let error = expect_compile_error(@registry.builtin(), "%{WORD")
-  assert_eq(describe_compile_error(error), "pattern: pattern error at offset 0: unterminated pattern reference\n  %{WORD\n  ^")
+  assert_eq(
+    describe_compile_error(error),
+    "pattern: pattern error at offset 0: unterminated pattern reference\n  %{WORD\n  ^",
+  )
 }
 
 ///|
 test "a real access-log pattern compiles with three fields" {
-  let program = expect_compile(@registry.builtin(), "%{IP:client} %{WORD:method} %{STATUS:status}")
+  let program = expect_compile(
+    @registry.builtin(),
+    "%{IP:client} %{WORD:method} %{STATUS:status}",
+  )
   assert_eq(program.field_count(), 3)
   assert_eq(program.field_at(0), "client")
   assert_eq(program.field_at(1), "method")

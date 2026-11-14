@@ -24,6 +24,6 @@ pub struct Pattern {
 
 ///|
 /// Number of top-level segments in the pattern.
-pub fn Pattern::segment_count(self : Pattern) -> Int {
+pub fn Pattern::segment_count(self : Pattern) -> Int32 {
   self.segments.length()
 }

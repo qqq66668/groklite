@@ -1,4 +1,5 @@
-///| The curated built-in registry.
+///|
+/// The curated built-in registry.
 ///
 /// Every entry is written here, in bracket classes rather than backslash
 /// shorthands, so the body text stays readable and identical across targets.

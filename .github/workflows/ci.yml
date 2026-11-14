@@ -17,6 +17,10 @@ jobs:
       - run: moon version --all
       - name: repository hygiene
         run: bash tools/check_no_pii.sh
+      - name: format
+        run: |
+          moon fmt
+          git diff --exit-code
       - name: check
         run: moon check --deny-warn
       - name: build

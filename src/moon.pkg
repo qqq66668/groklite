@@ -1,6 +1,6 @@
 import {
-  "qqq66668/groklite/src/syntax" @syntax,
-  "qqq66668/groklite/src/registry" @registry,
-  "qqq66668/groklite/src/compile" @compile,
-  "qqq66668/groklite/src/engine" @engine,
+  "qqq66668/groklite/src/syntax",
+  "qqq66668/groklite/src/registry",
+  "qqq66668/groklite/src/compile",
+  "qqq66668/groklite/src/engine",
 }

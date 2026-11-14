@@ -1,19 +1,23 @@
-///| Character classes used by pattern names and field names.
+///|
+/// Character classes used by pattern names and field names.
 fn is_ascii_digit(c : Char) -> Bool {
   let code = c.to_int()
   code >= 48 && code <= 57
 }
 
+///|
 fn is_ascii_upper(c : Char) -> Bool {
   let code = c.to_int()
   code >= 65 && code <= 90
 }
 
+///|
 fn is_ascii_lower(c : Char) -> Bool {
   let code = c.to_int()
   code >= 97 && code <= 122
 }
 
+///|
 fn is_name_char(c : Char) -> Bool {
   is_ascii_digit(c) || is_ascii_upper(c) || is_ascii_lower(c) || c == '_'
 }
@@ -71,15 +75,15 @@ pub fn parse(text : String) -> Result[Pattern, ParseError] {
     } else if mode == 1 {
       if c == '}' {
         if name_len == 0 {
-          return Err({ kind: EmptyName, offset: ref_offset + 2, source: text })
+          return Err({ kind: EmptyName, offset: ref_offset + 2, source: text, })
         }
-        segments.push(Ref({ name : name_buf.to_string(), field : None }))
+        segments.push(Ref({ name: name_buf.to_string(), field: None, }))
         name_buf = StringBuilder()
         name_len = 0
         mode = 0
       } else if c == ':' {
         if name_len == 0 {
-          return Err({ kind: EmptyName, offset: ref_offset + 2, source: text })
+          return Err({ kind: EmptyName, offset: ref_offset + 2, source: text, })
         }
         colon_offset = offset
         mode = 2
@@ -87,30 +91,34 @@ pub fn parse(text : String) -> Result[Pattern, ParseError] {
         name_buf.write_char(c)
         name_len = name_len + 1
       } else {
-        return Err({ kind: InvalidNameChar, offset : offset, source: text })
+        return Err({ kind: InvalidNameChar, offset, source: text, })
       }
+    } else if c == '}' {
+      if field_len == 0 {
+        return Err({ kind: EmptyField, offset: colon_offset, source: text, })
+      }
+      segments.push(
+        Ref({ name: name_buf.to_string(), field: Some(field_buf.to_string()), }),
+      )
+      name_buf = StringBuilder()
+      field_buf = StringBuilder()
+      name_len = 0
+      field_len = 0
+      mode = 0
+    } else if is_name_char(c) {
+      field_buf.write_char(c)
+      field_len = field_len + 1
     } else {
-      if c == '}' {
-        if field_len == 0 {
-          return Err({ kind: EmptyField, offset: colon_offset, source: text })
-        }
-        segments.push(Ref({ name : name_buf.to_string(), field : Some(field_buf.to_string()) }))
-        name_buf = StringBuilder()
-        field_buf = StringBuilder()
-        name_len = 0
-        field_len = 0
-        mode = 0
-      } else if is_name_char(c) {
-        field_buf.write_char(c)
-        field_len = field_len + 1
-      } else {
-        return Err({ kind: InvalidFieldChar, offset : offset, source: text })
-      }
+      return Err({ kind: InvalidFieldChar, offset, source: text, })
     }
     offset = offset + 1
   }
   if mode != 0 {
-    return Err({ kind: UnterminatedReference, offset: ref_offset, source: text })
+    return Err({
+      kind: UnterminatedReference,
+      offset: ref_offset,
+      source: text,
+    })
   }
   if pending_percent {
     literal.write_char('%')
@@ -119,5 +127,5 @@ pub fn parse(text : String) -> Result[Pattern, ParseError] {
   if literal_len > 0 {
     segments.push(Literal(literal.to_string()))
   }
-  Ok({ segments : segments })
+  Ok({ segments, })
 }

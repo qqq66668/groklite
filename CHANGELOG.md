@@ -5,6 +5,9 @@ version is cut.
 
 ## Unreleased
 
+- Build: `moon fmt` is applied across the module and a formatting gate in CI and in
+  `justfile` fails the run when the rewrite moves anything.
+
 - Continuous integration: a target matrix runs the suite again on wasm-gc and js, so
   the claim that behaviour does not depend on the backend is checked rather than
   asserted.

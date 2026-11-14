@@ -33,7 +33,8 @@ test "no program matching is reported once for the whole list" {
   let programs : Array[@compile.Program] = [three, plain]
   match match_first(programs, "GET /index") {
     Ok(_) => abort("expected no match")
-    Err(error) => assert_eq(describe_match_error(error), "line does not match the pattern")
+    Err(error) =>
+      assert_eq(describe_match_error(error), "line does not match the pattern")
   }
 }
 
@@ -42,7 +43,8 @@ test "an empty program list matches nothing" {
   let programs : Array[@compile.Program] = []
   match match_first(programs, "anything") {
     Ok(_) => abort("expected no match")
-    Err(error) => assert_eq(describe_match_error(error), "line does not match the pattern")
+    Err(error) =>
+      assert_eq(describe_match_error(error), "line does not match the pattern")
   }
 }
 
@@ -52,6 +54,10 @@ test "a budget failure stops the search instead of counting as a miss" {
   let programs : Array[@compile.Program] = [plain]
   match match_first_with_limit(programs, "123", 1) {
     Ok(_) => abort("expected the budget to run out")
-    Err(error) => assert_eq(describe_match_error(error), "pattern exceeded the step budget of 1 steps")
+    Err(error) =>
+      assert_eq(
+        describe_match_error(error),
+        "pattern exceeded the step budget of 1 steps",
+      )
   }
 }

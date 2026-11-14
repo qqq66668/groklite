@@ -1,9 +1,11 @@
+///|
 fn backslash_text() -> String {
   let sb : StringBuilder = StringBuilder()
   sb.write_char('\\')
   sb.to_string()
 }
 
+///|
 fn expect_rule(text : String) -> @compile.Node {
   match @compile.parse_rule(text) {
     Ok(node) => node
@@ -11,6 +13,7 @@ fn expect_rule(text : String) -> @compile.Node {
   }
 }
 
+///|
 fn expect_rule_error(text : String) -> @compile.RuleError {
   match @compile.parse_rule(text) {
     Ok(_) => abort("expected a rule error for: " + text)
@@ -20,7 +23,10 @@ fn expect_rule_error(text : String) -> @compile.RuleError {
 
 ///|
 test "a literal run becomes one sequence" {
-  assert_eq(@compile.render_node(expect_rule("abc")), "seq(lit(a) lit(b) lit(c))")
+  assert_eq(
+    @compile.render_node(expect_rule("abc")),
+    "seq(lit(a) lit(b) lit(c))",
+  )
 }
 
 ///|
@@ -30,7 +36,10 @@ test "a bracket class with a bounded repeat" {
 
 ///|
 test "alternation inside a group" {
-  assert_eq(@compile.render_node(expect_rule("(?:a|b)+")), "rep(1,inf,alt(lit(a)|lit(b)))")
+  assert_eq(
+    @compile.render_node(expect_rule("(?:a|b)+")),
+    "rep(1,inf,alt(lit(a)|lit(b)))",
+  )
 }
 
 ///|
@@ -40,7 +49,10 @@ test "a negated class keeps the space it excludes" {
 
 ///|
 test "a shorthand escape stays a shorthand" {
-  assert_eq(@compile.render_node(expect_rule(backslash_text() + "d+")), "rep(1,inf,bs(d))")
+  assert_eq(
+    @compile.render_node(expect_rule(backslash_text() + "d+")),
+    "rep(1,inf,bs(d))",
+  )
 }
 
 ///|
@@ -56,13 +68,19 @@ test "anchors sit in the sequence they belong to" {
 ///|
 test "an unclosed class is an error at its opening bracket" {
   let error = expect_rule_error("[0-9")
-  assert_eq(@compile.describe_rule_error(error), "unbalanced character class at offset 0")
+  assert_eq(
+    @compile.describe_rule_error(error),
+    "unbalanced character class at offset 0",
+  )
 }
 
 ///|
 test "a quantifier with nothing before it is an error" {
   let error = expect_rule_error("*a")
-  assert_eq(@compile.describe_rule_error(error), "nothing to repeat at offset 0")
+  assert_eq(
+    @compile.describe_rule_error(error),
+    "nothing to repeat at offset 0",
+  )
 }
 
 ///|
@@ -74,7 +92,10 @@ test "an unclosed group is an error at its opening parenthesis" {
 ///|
 test "a malformed repetition is an error at the brace" {
   let error = expect_rule_error("a{3")
-  assert_eq(@compile.describe_rule_error(error), "malformed repetition at offset 1")
+  assert_eq(
+    @compile.describe_rule_error(error),
+    "malformed repetition at offset 1",
+  )
 }
 
 ///|
