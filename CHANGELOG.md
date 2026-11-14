@@ -7,6 +7,13 @@ version is cut.
 
 Nothing yet.
 
+## 0.1.1 - 2026-11-14
+
+- Documentation: `README.md` now states the shipped capability set instead of the
+  first milestone, records provenance against logstash-patterns-core (Apache-2.0)
+  and lists the commands that verify the claims.
+- Documentation: `CHANGELOG.md` gained a versioned section for the first release.
+
 ## 0.1.0 - 2026-11-13
 
 - Published to mooncakes.io as `qqq66668/groklite@0.1.0`.

@@ -41,20 +41,25 @@ and `docs/limits.md` states what the library refuses to do.
 
 ## What works today
 
-The pattern syntax layer. `parse` turns pattern text into ordered segments, attaches a
-field name to the reference that carries it, and reports malformed input with an
-offset and a caret line instead of a boolean. There is no guessing involved: eight
-tests cover literals, references with and without a field, mixed patterns, an
-unterminated reference, an empty name, an empty field and a character outside the
-allowed set.
+Six capabilities, each covered by tests and exercised by the examples:
 
-The registry adds a curated sixteen-entry built-in subset plus recursive expansion with
-cycle, depth and nested-field errors. The syslog family then adds month day, time, timestamp, program and a composite base rule, each exercised by a corpus row. The rule grammar reads bracket classes, shorthand escapes, groups, alternation,
-anchors and bounded repetition into a node tree, with every malformed body refused at
-the offset that caused it. Compilation turns that tree plus the registry into a program with numbered capture
-slots and a field table, refusing an unknown rule, a malformed rule body, a field
-declared twice and an empty pattern. Matching runs that program over one line and returns a field table keyed by the names the pattern declares. A line must match in full; a partial match is a failure, not a best-effort result. Every pass is bounded by a step budget, and running out is reported as an error rather than a hang. `docs/limits.md` describes the grammar the matcher
-will accept, so the boundary is written down before the code exists.
+1. `parse` turns pattern text into literal and reference segments, and reports a
+   malformed pattern with an offset and a caret line.
+2. `builtin` ships 16 curated rules: the access-log core plus the syslog prefix.
+3. `parse_rule` reads a rule body into a node tree: bracket classes, shorthand
+   escapes, groups, alternation, anchors and bounded repetition.
+4. `compile` lowers segments into a program with numbered capture slots and a field
+   table, refusing a duplicate field, an unknown rule and a malformed body at
+   compile time.
+5. `match_line` runs a program over one line and returns a field table. Matching is
+   whole-line: a partial match is a failure, not a best-effort result. Every pass is
+   bounded by a step budget, and running out is reported rather than hidden.
+6. `match_first` tries compiled programs in order and reports the first whole-line
+   match, so a stream that mixes formats needs one pass instead of one branch per
+   format.
+
+65 tests cover those paths: unit tests beside each package, a corpus table that
+drives the public facade, and the two examples continuous integration executes.
 
 ## Run the example
 
