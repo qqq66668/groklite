@@ -5,6 +5,12 @@ version is cut.
 
 ## Unreleased
 
+- Continuous integration: a target matrix runs the suite again on wasm-gc and js, so
+  the claim that behaviour does not depend on the backend is checked rather than
+  asserted.
+- Documentation: `docs/limits.md` no longer promises a future throughput number and
+  states the shape of the cost instead.
+
 - Documentation: `README.md` gained an install and usage section for
   consumers of the published package, with the call shape the example uses.
 

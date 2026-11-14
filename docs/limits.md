@@ -43,8 +43,12 @@ Not supported, and rejected at compile time where the construct is recognised:
   group cannot loop forever.
 - Matching is whole-line. A pattern that matches only a prefix reports no match; a
   caller that wants a prefix match anchors the pattern itself.
-- No throughput claim is made here. A number appears only after a benchmark target
-  exists and runs in continuous integration.
+- No throughput figure is published. A number would describe one machine and one
+  backend, while this repository tests several targets rather than one measurement
+  host, so a figure in this file could not be reproduced from the repository.
+  What is published instead is the shape of the cost: matching backtracks over the
+  compiled program, the search is bounded by the step budget, and that budget is a
+  parameter a caller can lower.
 
 ## Scope
 
