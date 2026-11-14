@@ -167,7 +167,7 @@ moon run examples/syslog_to_json
 bash tools/check_no_pii.sh
 ```
 
-Continuous integration runs the same five steps, so a claim that drifts away from the
+Continuous integration runs the same five steps and then the suite again on each target in the matrix, so a claim that drifts away from the
 code fails the build instead of aging quietly in this file.
 ## Boundaries
 
