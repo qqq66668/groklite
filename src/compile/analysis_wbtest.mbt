@@ -18,7 +18,7 @@ test "a literal pattern is bounded on both sides" {
   let report = analyze(prog_of(@registry.builtin(), "hi"))
   assert_eq(report.min_chars(), 2)
   assert_eq(report.max_chars(), Some(2))
-  assert_eq(report.step_bound(), Some(2))
+  assert_eq(report.structure_steps(), Some(2))
 }
 
 ///|
@@ -43,7 +43,7 @@ test "a bounded repetition sums up" {
   let report = analyze(prog_of(registry, text))
   assert_eq(report.min_chars(), 2)
   assert_eq(report.max_chars(), Some(4))
-  assert_eq(report.step_bound(), Some(4))
+  assert_eq(report.structure_steps(), Some(4))
 }
 
 ///|

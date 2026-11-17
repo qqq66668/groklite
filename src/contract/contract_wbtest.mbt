@@ -136,3 +136,25 @@ test "an optional field that is absent is skipped silently" {
   spec.min_length("absent", 10)
   assert_eq(validate(fields_of("%{WORD:method}", "GET"), spec).length(), 0)
 }
+
+///|
+test "a value beyond 32 bits is rejected instead of wrapping" {
+  let spec = contract()
+  spec.between("bytes", 0, 100)
+  let found = validate(fields_of("%{NUMBER:bytes}", "4294967306"), spec)
+  assert_eq(found.length(), 1)
+  assert_eq(
+    describe_violation(found[0]),
+    "field bytes does not fit a 32-bit integer: 4294967306",
+  )
+}
+
+///|
+test "a moderately large value still parses" {
+  let spec = contract()
+  spec.between("bytes", 0, 2147483647)
+  assert_eq(
+    validate(fields_of("%{NUMBER:bytes}", "2147483647"), spec).length(),
+    0,
+  )
+}

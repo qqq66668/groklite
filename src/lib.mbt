@@ -214,3 +214,24 @@ pub fn record_first_line(record : @record.Record) -> Int32 {
 pub fn record_line_count(record : @record.Record) -> Int32 {
   record.line_count()
 }
+
+///|
+/// Start a push-based record assembly for streams.
+pub fn stream(loader : @record.Assembler) -> @record.StreamAssembler {
+  @record.stream(loader)
+}
+
+///|
+/// Feed one physical line; returns the record it completes, if any.
+pub fn feed(
+  state : @record.StreamAssembler,
+  line : String,
+) -> Array[@record.Record] {
+  state.feed(line)
+}
+
+///|
+/// Close the open record at the end of a stream.
+pub fn finish(state : @record.StreamAssembler) -> Array[@record.Record] {
+  state.finish()
+}

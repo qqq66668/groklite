@@ -177,6 +177,14 @@ Matching is one stage of a pipeline; the module ships the stages around it too.
 let loader = assembler()                       // indented lines join the record
 loader.continue_on("Caused by:")
 let records = assemble(loader, lines)           // physical lines -> logical records
+
+let state = stream(loader)                       // or push lines as they arrive
+for line in lines {
+  for record in feed(state, line) {
+    // one record completed here
+  }
+}
+let last = finish(state)                         // flush the open record
 let program = compile_builtin(pattern)?
 let report = analyze(program)                    // bounds and defects, no run needed
 let fields = match_line(program, record_text(records[0]))?

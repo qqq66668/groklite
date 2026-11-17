@@ -53,6 +53,24 @@ pub fn Assembler::without_indented_continuation(self : Assembler) -> Unit {
 }
 
 ///|
+/// A push-based assembler for streams.
+///
+/// Mutable state lives in one-element arrays because struct fields are immutable.
+pub struct StreamAssembler {
+  loader : Assembler
+  first : Array[Int32]
+  seen : Array[Int32]
+  open : Array[Bool]
+  buffer : Array[Array[String]]
+}
+
+///|
+/// Start a stream assembly with the given continuation rules.
+pub fn stream(loader : Assembler) -> StreamAssembler {
+  { loader, first: [0], seen: [0], open: [false], buffer: [[]], }
+}
+
+///|
 fn chars_of(text : String) -> Array[Char] {
   let chars : Array[Char] = []
   for c in text {
@@ -119,58 +137,82 @@ fn is_continuation(loader : Assembler, line : String) -> Bool {
 }
 
 ///|
-/// Assemble physical lines into logical records.
-///
-/// A blank line closes the open record and is dropped. A line that looks like a
-/// continuation joins the open record; when no record is open it starts one, so a
-/// truncated first line is reported rather than silently discarded.
-pub fn assemble(loader : Assembler, lines : Array[String]) -> Array[Record] {
-  let records : Array[Record] = []
-  let mut open_first : Int32 = 0
-  let mut open_count : Int32 = 0
-  let mut open_text : StringBuilder = StringBuilder()
-  let mut open = false
+fn close_record(state : StreamAssembler) -> Record {
+  let lines = state.buffer[0]
+  let sb : StringBuilder = StringBuilder()
   let mut index = 0
   while index < lines.length() {
-    let line = lines[index]
-    let line_number = index + 1
-    if is_blank(line) {
-      if open {
-        records.push({
-          first_line: open_first,
-          line_count: open_count,
-          text: open_text.to_string(),
-        })
-        open = false
-        open_text = StringBuilder()
-        open_count = 0
-      }
-    } else if open && is_continuation(loader, line) {
-      open_text.write_char('\n')
-      open_text.write_string(line)
-      open_count = open_count + 1
-    } else {
-      if open {
-        records.push({
-          first_line: open_first,
-          line_count: open_count,
-          text: open_text.to_string(),
-        })
-      }
-      open_first = line_number
-      open_count = 1
-      open = true
-      open_text = StringBuilder()
-      open_text.write_string(line)
+    if index > 0 {
+      sb.write_char('\n')
     }
+    sb.write_string(lines[index])
     index = index + 1
   }
-  if open {
-    records.push({
-      first_line: open_first,
-      line_count: open_count,
-      text: open_text.to_string(),
-    })
+  let record : Record = {
+    first_line: state.first[0],
+    line_count: lines.length(),
+    text: sb.to_string(),
+  }
+  state.open[0] = false
+  state.buffer[0] = []
+  record
+}
+
+///|
+/// Feed one physical line; returns the record it completes, if any.
+///
+/// A blank line closes the open record and is dropped. A continuation joins the open
+/// record; with no record open it starts one, so a truncated first line survives.
+pub fn StreamAssembler::feed(
+  self : StreamAssembler,
+  line : String,
+) -> Array[Record] {
+  self.seen[0] = self.seen[0] + 1
+  let finished : Array[Record] = []
+  if is_blank(line) {
+    if self.open[0] {
+      finished.push(close_record(self))
+    }
+    return finished
+  }
+  if self.open[0] && is_continuation(self.loader, line) {
+    self.buffer[0].push(line)
+    return finished
+  }
+  if self.open[0] {
+    finished.push(close_record(self))
+  }
+  self.first[0] = self.seen[0]
+  self.open[0] = true
+  self.buffer[0] = [line]
+  finished
+}
+
+///|
+/// Close the open record at the end of a stream.
+pub fn StreamAssembler::finish(self : StreamAssembler) -> Array[Record] {
+  let finished : Array[Record] = []
+  if self.open[0] {
+    finished.push(close_record(self))
+  }
+  finished
+}
+
+///|
+/// Assemble physical lines into logical records.
+///
+/// Implemented on top of the streaming assembler, so the batch and the stream cannot
+/// drift apart.
+pub fn assemble(loader : Assembler, lines : Array[String]) -> Array[Record] {
+  let state = stream(loader)
+  let records : Array[Record] = []
+  for line in lines {
+    for record in state.feed(line) {
+      records.push(record)
+    }
+  }
+  for record in state.finish() {
+    records.push(record)
   }
   records
 }

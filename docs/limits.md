@@ -67,3 +67,14 @@ Not supported, and rejected at compile time where the construct is recognised:
   an integer check reports whether the text parses, it does not rewrite the map.
 - A cross-field comparison runs only when both sides parse as integers; a
   non-integer side is reported, not skipped silently.
+## Numbers and streams
+
+- A field is read as a signed 32-bit integer. A magnitude that does not fit is
+  reported, never wrapped; wrapping would let an out-of-range value satisfy a
+  range check.
+- `structure_steps` counts instruction visits in the compiled tree. A backtracking
+  search can visit more instructions than the tree contains, so the number compares
+  patterns and is not a budget for the engine.
+- Stream assembly holds one record in memory at a time. A record that never ends
+  (no blank line, no new header) grows without bound; that is the caller's input,
+  not a library limit.

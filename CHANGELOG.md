@@ -5,12 +5,18 @@ version is cut.
 
 ## Unreleased
 
-- Analysis: static length and step bounds plus four pattern defects, computed from
-  the compiled tree without running a match.
-- Contract: semantic validation of matched fields, including missing fields,
-  integer ranges, enums, length bounds and cross-field order.
-- Record: assembly of physical lines into logical records, by indentation or by a
-  configured prefix, for formats whose records span lines.
+Nothing yet.
+
+## 0.1.3 - 2026-11-17
+
+- Record assembly: a push-based stream assembler, with the batch entry point
+  reimplemented on top of it so the two cannot drift.
+- Contracts: a value that does not fit a signed 32-bit integer is reported as such
+  instead of wrapping, because a wrapped value could satisfy a range check.
+- Analysis: the step accessor is renamed `structure_steps` and documented as a tree
+  count rather than a match budget, after a probe showed the engine can exceed it.
+- Documentation: decision 0004 records why the depth of the project sits after the
+  match rather than inside it.
 
 ## 0.1.2 - 2026-11-14
 

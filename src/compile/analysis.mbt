@@ -16,7 +16,7 @@ pub enum Issue {
 pub struct Analysis {
   min_length : Int32
   max_length : Int32?
-  max_steps : Int32?
+  structure : Int32?
   field_max : Array[Int32?]
   issues : Array[Issue]
 }
@@ -34,9 +34,13 @@ pub fn Analysis::max_chars(self : Analysis) -> Int32? {
 }
 
 ///|
-/// Upper bound on matcher steps, or none when unbounded.
-pub fn Analysis::step_bound(self : Analysis) -> Int32? {
-  self.max_steps
+/// Instruction visits in the compiled tree, or none when unbounded.
+///
+/// This counts the tree, not the engine's dynamic work: a backtracking search visits
+/// more instructions than the tree contains, so this number compares patterns and is
+/// not a budget to hand to `match_line_with_limit`.
+pub fn Analysis::structure_steps(self : Analysis) -> Int32? {
+  self.structure
 }
 
 ///|
@@ -308,7 +312,7 @@ fn collect_fields(instr : Instr, bounds : Array[Int32?]) -> Unit {
 /// Analyse a compiled program without running it.
 ///
 /// The report answers questions a caller cannot ask a regular-expression engine:
-/// how long a match can be, how many steps the search can take, how long each field
+/// how long a match can be, how large the compiled structure is, how long each field
 /// can be, and whether the pattern contains a construct that cannot do what it looks
 /// like it does.
 pub fn analyze(program : Program) -> Analysis {
@@ -325,7 +329,7 @@ pub fn analyze(program : Program) -> Analysis {
   {
     min_length: low,
     max_length: high,
-    max_steps: steps_of(program.instr),
+    structure: steps_of(program.instr),
     field_max: bounds,
     issues,
   }

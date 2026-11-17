@@ -35,11 +35,20 @@ pub struct Contract {
 pub enum Violation {
   Missing(String)
   NotAnInteger(String, String)
+  OutOfInt32(String, String)
   OutOfRange(String, String, Int32, Int32)
   NotOneOf(String, String)
   TooShort(String, String, Int32)
   TooLong(String, String, Int32)
   CrossFails(String, String, String, String)
+}
+
+///|
+/// The outcome of reading a field as a number.
+pub enum ParsedInt {
+  Fits(Int32)
+  TooLarge
+  NotANumber
 }
 
 ///|
@@ -159,15 +168,18 @@ pub fn Contract::greater_or_equal(
 }
 
 ///|
-/// Parse a decimal integer, or none when the text is not one.
-fn parse_integer(text : String) -> Int32? {
+/// Read the field text as a signed 32-bit integer.
+///
+/// A magnitude that does not fit is reported as `TooLarge` rather than wrapped:
+/// silent wrapping would let an out-of-range value satisfy a range check.
+fn parse_integer(text : String) -> ParsedInt {
   let chars : Array[Char] = []
   for c in text {
     chars.push(c)
   }
   let total = chars.length()
   if total == 0 {
-    return None
+    return NotANumber
   }
   let mut index = 0
   let mut negative = false
@@ -178,21 +190,32 @@ fn parse_integer(text : String) -> Int32? {
     index = 1
   }
   if index >= total {
-    return None
+    return NotANumber
   }
   let mut value : Int32 = 0
+  let mut overflow = false
   while index < total {
     let code = chars[index].to_int()
     if code < 48 || code > 57 {
-      return None
+      return NotANumber
     }
-    value = value * 10 + (code - 48)
+    let digit = code - 48
+    if value > 214748364 {
+      overflow = true
+    } else if value == 214748364 && digit > 7 {
+      overflow = true
+    }
+    if !overflow {
+      value = value * 10 + digit
+    }
     index = index + 1
   }
-  if negative {
-    Some(-value)
+  if overflow {
+    TooLarge
+  } else if negative {
+    Fits(-value)
   } else {
-    Some(value)
+    Fits(value)
   }
 }
 
@@ -219,16 +242,18 @@ fn check_value(
   match check {
     IsInteger =>
       match parse_integer(value) {
-        None => out.push(NotAnInteger(field, value))
-        Some(_) => ()
+        Fits(_) => ()
+        TooLarge => out.push(OutOfInt32(field, value))
+        NotANumber => out.push(NotAnInteger(field, value))
       }
     Between(low, high) =>
       match parse_integer(value) {
-        None => out.push(NotAnInteger(field, value))
-        Some(number) =>
+        Fits(number) =>
           if number < low || number > high {
             out.push(OutOfRange(field, value, low, high))
           }
+        TooLarge => out.push(OutOfInt32(field, value))
+        NotANumber => out.push(NotAnInteger(field, value))
       }
     OneOf(values) =>
       if !contains_value(values, value) {
@@ -281,11 +306,13 @@ pub fn validate(
           None => ()
           Some(right_text) =>
             match parse_integer(left_text) {
-              None => out.push(NotAnInteger(cross.left, left_text))
-              Some(left_number) =>
+              NotANumber => out.push(NotAnInteger(cross.left, left_text))
+              TooLarge => out.push(OutOfInt32(cross.left, left_text))
+              Fits(left_number) =>
                 match parse_integer(right_text) {
-                  None => out.push(NotAnInteger(cross.right, right_text))
-                  Some(right_number) =>
+                  NotANumber => out.push(NotAnInteger(cross.right, right_text))
+                  TooLarge => out.push(OutOfInt32(cross.right, right_text))
+                  Fits(right_number) =>
                     if left_number < right_number {
                       out.push(
                         CrossFails(
@@ -312,6 +339,8 @@ pub fn describe_violation(violation : Violation) -> String {
     Missing(field) => "missing required field: " + field
     NotAnInteger(field, value) =>
       "field " + field + " is not an integer: " + value
+    OutOfInt32(field, value) =>
+      "field " + field + " does not fit a 32-bit integer: " + value
     OutOfRange(field, value, low, high) =>
       "field " +
       field +

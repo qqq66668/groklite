@@ -68,3 +68,55 @@ test "a record description names its start line" {
   let records = assemble(assembler(), ["head", "  tail"])
   assert_eq(describe_record(records[0]), "record at line 1 covering 2 line(s)")
 }
+
+///|
+test "streaming completes a record when the next header arrives" {
+  let state = stream(assembler())
+  let first : Array[Record] = []
+  for record in state.feed("head") {
+    first.push(record)
+  }
+  for record in state.feed("  tail") {
+    first.push(record)
+  }
+  assert_eq(first.length(), 0)
+  let done = state.feed("next")
+  assert_eq(done.length(), 1)
+  assert_eq(done[0].line_count(), 2)
+  assert_eq(done[0].first_line(), 1)
+}
+
+///|
+test "streaming finish flushes the open record" {
+  let state = stream(assembler())
+  for record in state.feed("head") {
+    assert_eq(record.line_count(), -1)
+  }
+  let done = state.finish()
+  assert_eq(done.length(), 1)
+  assert_eq(done[0].text(), "head")
+}
+
+///|
+test "streaming and batch produce the same records" {
+  let lines : Array[String] = ["a", "  b", "", "c", "  d", "e"]
+  let batch = assemble(assembler(), lines)
+  let state = stream(assembler())
+  let streamed : Array[Record] = []
+  for line in lines {
+    for record in state.feed(line) {
+      streamed.push(record)
+    }
+  }
+  for record in state.finish() {
+    streamed.push(record)
+  }
+  assert_eq(batch.length(), streamed.length())
+  let mut index = 0
+  while index < batch.length() {
+    assert_eq(batch[index].text(), streamed[index].text())
+    assert_eq(batch[index].first_line(), streamed[index].first_line())
+    assert_eq(batch[index].line_count(), streamed[index].line_count())
+    index = index + 1
+  }
+}
