@@ -69,7 +69,7 @@ and continuous integration runs that example, so the shape of the call stays hon
 
 ## Shape
 
-Four packages with one direction of dependency:
+Seven packages with one direction of dependency:
 
 - `src/syntax` turns pattern text into ordered segments and reports offsets.
 - `src/registry` maps a pattern name to a rule.
@@ -169,6 +169,28 @@ bash tools/check_no_pii.sh
 
 Continuous integration runs the same five steps and then the suite again on each target in the matrix, so a claim that drifts away from the
 code fails the build instead of aging quietly in this file.
+## Beyond matching
+
+Matching is one stage of a pipeline; the module ships the stages around it too.
+
+```
+let loader = assembler()                       // indented lines join the record
+loader.continue_on("Caused by:")
+let records = assemble(loader, lines)           // physical lines -> logical records
+let program = compile_builtin(pattern)?
+let report = analyze(program)                    // bounds and defects, no run needed
+let fields = match_line(program, record_text(records[0]))?
+let spec = contract()
+spec.between("status", 100, 599)
+let problems = validate(fields, spec)            // semantic violations, not silence
+```
+
+`analyze` answers questions a general matcher cannot: how many characters the
+pattern can consume, how many steps the search can take, how long each field can
+be, and whether the pattern contains a construct that cannot behave as written.
+`validate` turns "the line matched" into "the fields mean what the caller needs",
+reporting a missing field, a non-integer, an out-of-range status, a value outside
+an enum, a length bound and an inverted cross-field order separately.
 ## Boundaries
 
 No file input, no network input, no log shipping, no type coercion: a caller hands in

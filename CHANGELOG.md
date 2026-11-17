@@ -5,7 +5,12 @@ version is cut.
 
 ## Unreleased
 
-Nothing yet.
+- Analysis: static length and step bounds plus four pattern defects, computed from
+  the compiled tree without running a match.
+- Contract: semantic validation of matched fields, including missing fields,
+  integer ranges, enums, length bounds and cross-field order.
+- Record: assembly of physical lines into logical records, by indentation or by a
+  configured prefix, for formats whose records span lines.
 
 ## 0.1.2 - 2026-11-14
 

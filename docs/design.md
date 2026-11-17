@@ -2,7 +2,7 @@
 
 ## Layers
 
-Four packages with one direction of dependency:
+Seven packages with one direction of dependency:
 
 - `syntax` turns pattern text into an AST and reports offsets. It knows nothing
   about matching.
@@ -11,6 +11,9 @@ Four packages with one direction of dependency:
 - `compile` walks the AST, expands registry references recursively, detects cycles
   and lowers the result into a program with numbered slots plus a field table.
 - `engine` executes a program over one line and returns a field map or an error. It
+- `analysis` reports static bounds and pattern defects without running the program.
+- `record` assembles physical lines into logical records before matching.
+- `contract` validates matched fields against declared semantic constraints.
   knows nothing about pattern syntax.
 
 `src/lib.mbt` is the only package with public exports. The four packages above are
@@ -48,3 +51,20 @@ regular-expression package.
   plus the expected field map, so a behaviour change appears as one row of data.
 - The example under `examples/` is compiled and run in continuous integration,
   which keeps the README honest.
+## Post-match stages
+
+Three stages surround matching and none of them depends on the matcher internals.
+
+- `record` owns the boundary between physical lines and a logical record. It is a
+  state machine over one line at a time, so a caller can stream input through it
+  without buffering the whole file.
+- `analysis` walks the compiled instruction tree and reports length bounds, a step
+  bound and four defects: an unbounded repetition over a nullable body, an end
+  anchor followed by a consumer, a start anchor after a consumer, and a repeated
+  alternation branch. These need the tree, which is why they belong to this
+  repository rather than to a matcher dependency.
+- `contract` validates a field table against declared checks. It reads only the
+  field map, so it works with any producer of that map.
+
+The three stages are optional. A caller that already has whole records and trusts
+its fields uses only syntax, registry, compile and engine.

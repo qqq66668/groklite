@@ -56,3 +56,14 @@ Not supported, and rejected at compile time where the construct is recognised:
   returns a value.
 - No pattern discovery from a directory at runtime. Patterns are compiled from text
   the caller already holds.
+## Post-match stages
+
+- Record assembly is line oriented: a record is a run of physical lines, and the
+  only continuation signals are indentation and literal prefixes. Detecting that a
+  line is a stack frame by parsing the language it came from is out of scope.
+- Static analysis reports bounds, not performance. A step bound is the number of
+  instructions the search may visit, not a wall-clock estimate.
+- Field contracts validate the text a pattern produced. They do not coerce types:
+  an integer check reports whether the text parses, it does not rewrite the map.
+- A cross-field comparison runs only when both sides parse as integers; a
+  non-integer side is reported, not skipped silently.
