@@ -64,9 +64,60 @@ pub fn Fields::has(self : Fields, name : String) -> Bool {
 
 ///|
 /// Why a line could not be matched.
+pub struct MatchFailure {
+  furthest : Int32
+  line_length : Int32
+  expected : String
+}
+
+///|
+/// The furthest position a failed search reached, and what it was trying there.
+pub fn MatchFailure::furthest(self : MatchFailure) -> Int32 {
+  self.furthest
+}
+
+///|
+/// Length of the input line, so a caller can say "3 of 12".
+pub fn MatchFailure::line_length(self : MatchFailure) -> Int32 {
+  self.line_length
+}
+
+///|
+/// The instruction the search was trying at the furthest position.
+pub fn MatchFailure::expected(self : MatchFailure) -> String {
+  self.expected
+}
+
+///|
+/// Why a line could not be matched.
 pub enum MatchError {
-  NoMatch
-  StepBudget(Int32)
+  NoMatch(MatchFailure)
+  StepBudget(Int32, MatchFailure)
+}
+
+///|
+/// A mutable probe, so the search can report where it got stuck.
+priv struct Probe {
+  furthest : Array[Int32]
+  expected : Array[String]
+}
+
+///|
+fn note_progress(probe : Probe, pos : Int32, instr : @compile.Instr) -> Unit {
+  if pos > probe.furthest[0] {
+    probe.furthest[0] = pos
+    probe.expected[0] = @compile.render_instr(instr)
+  }
+}
+
+///|
+fn failure_of(input : Array[Char], probe : Probe) -> MatchFailure {
+  let reached = if probe.furthest[0] < 0 { 0 } else { probe.furthest[0] }
+  {
+    furthest: reached,
+    line_length: input.length(),
+    expected: probe.expected[0],
+  }
 }
 
 ///|
@@ -221,8 +272,10 @@ fn ends_of(
   pos : Int32,
   budget : Array[Int32],
   overflow : Array[Int32],
+  probe : Probe,
 ) -> Array[Branch] {
   spend(budget)
+  note_progress(probe, pos, instr)
   let nothing : Array[Branch] = []
   if budget[0] > budget[1] {
     overflow[0] = overflow[0] + 1
@@ -251,12 +304,12 @@ fn ends_of(
       } else {
         nothing
       }
-    @compile.Seq(items) => seq_ends(items, input, pos, budget, overflow)
-    @compile.Alt(items) => alt_ends(items, input, pos, budget, overflow)
+    @compile.Seq(items) => seq_ends(items, input, pos, budget, overflow, probe)
+    @compile.Alt(items) => alt_ends(items, input, pos, budget, overflow, probe)
     @compile.Repeat(inner, low, high) =>
-      repeat_ends(inner, low, high, input, pos, budget, overflow)
+      repeat_ends(inner, low, high, input, pos, budget, overflow, probe)
     @compile.Capture(slot, inner) =>
-      capture_ends(slot, inner, input, pos, budget, overflow)
+      capture_ends(slot, inner, input, pos, budget, overflow, probe)
   }
 }
 
@@ -267,13 +320,14 @@ fn seq_ends(
   pos : Int32,
   budget : Array[Int32],
   overflow : Array[Int32],
+  probe : Probe,
 ) -> Array[Branch] {
   let mut current : Array[Branch] = []
   current.push({ stop: pos, spans: [], })
   for item in items {
     let next : Array[Branch] = []
     for branch in current {
-      let pieces = ends_of(item, input, branch.stop, budget, overflow)
+      let pieces = ends_of(item, input, branch.stop, budget, overflow, probe)
       for piece in pieces {
         next.push({
           stop: piece.stop,
@@ -293,10 +347,11 @@ fn alt_ends(
   pos : Int32,
   budget : Array[Int32],
   overflow : Array[Int32],
+  probe : Probe,
 ) -> Array[Branch] {
   let out : Array[Branch] = []
   for item in items {
-    let pieces = ends_of(item, input, pos, budget, overflow)
+    let pieces = ends_of(item, input, pos, budget, overflow, probe)
     for piece in pieces {
       out.push(piece)
     }
@@ -313,6 +368,7 @@ fn repeat_ends(
   pos : Int32,
   budget : Array[Int32],
   overflow : Array[Int32],
+  probe : Probe,
 ) -> Array[Branch] {
   let len = input.length()
   let cap = if high < 0 { len + 1 } else { high }
@@ -327,7 +383,7 @@ fn repeat_ends(
   while going && count < cap {
     let next : Array[Branch] = []
     for branch in frontier {
-      let pieces = ends_of(inner, input, branch.stop, budget, overflow)
+      let pieces = ends_of(inner, input, branch.stop, budget, overflow, probe)
       for piece in pieces {
         if piece.stop > branch.stop {
           next.push({
@@ -366,8 +422,9 @@ fn capture_ends(
   pos : Int32,
   budget : Array[Int32],
   overflow : Array[Int32],
+  probe : Probe,
 ) -> Array[Branch] {
-  let pieces = ends_of(inner, input, pos, budget, overflow)
+  let pieces = ends_of(inner, input, pos, budget, overflow, probe)
   let out : Array[Branch] = []
   for piece in pieces {
     out.push({
@@ -392,9 +449,10 @@ pub fn match_line_with_limit(
   for c in line {
     input.push(c)
   }
+  let probe : Probe = { furthest: [-1], expected: [""], }
   let budget : Array[Int32] = [0, step_limit]
   let overflow : Array[Int32] = [0]
-  let branches = ends_of(program.root(), input, 0, budget, overflow)
+  let branches = ends_of(program.root(), input, 0, budget, overflow, probe)
   let len = input.length()
   let mut chosen : Branch? = None
   let mut index = 0
@@ -411,9 +469,9 @@ pub fn match_line_with_limit(
   match chosen {
     None =>
       if overflow[0] > 0 {
-        Err(StepBudget(step_limit))
+        Err(StepBudget(step_limit, failure_of(input, probe)))
       } else {
-        Err(NoMatch)
+        Err(NoMatch(failure_of(input, probe)))
       }
     Some(branch) => {
       let names = program.field_names()
@@ -450,8 +508,34 @@ pub fn match_line(
 /// Render a match failure as one stable line.
 pub fn describe_match_error(error : MatchError) -> String {
   match error {
-    NoMatch => "line does not match the pattern"
-    StepBudget(limit) =>
+    NoMatch(_) => "line does not match the pattern"
+    StepBudget(limit, _) =>
       "pattern exceeded the step budget of " + limit.to_string() + " steps"
+  }
+}
+
+///|
+/// Render why a line failed, with the position the search reached.
+///
+/// The summary stays stable for callers that only branch on success; this detail is
+/// what a person needs while writing a pattern.
+pub fn describe_failure(error : MatchError) -> String {
+  match error {
+    NoMatch(failure) =>
+      "no match: reached position " +
+      failure.furthest.to_string() +
+      " of " +
+      failure.line_length.to_string() +
+      " while trying " +
+      failure.expected
+    StepBudget(limit, failure) =>
+      "step budget of " +
+      limit.to_string() +
+      " exhausted at position " +
+      failure.furthest.to_string() +
+      " of " +
+      failure.line_length.to_string() +
+      " while trying " +
+      failure.expected
   }
 }

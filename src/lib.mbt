@@ -235,3 +235,9 @@ pub fn feed(
 pub fn finish(state : @record.StreamAssembler) -> Array[@record.Record] {
   state.finish()
 }
+
+///|
+/// Render why a line failed, with the position the search reached.
+pub fn describe_failure(error : @engine.MatchError) -> String {
+  @engine.describe_failure(error)
+}

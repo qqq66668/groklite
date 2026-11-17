@@ -78,3 +78,11 @@ Not supported, and rejected at compile time where the construct is recognised:
 - Stream assembly holds one record in memory at a time. A record that never ends
   (no blank line, no new header) grows without bound; that is the caller's input,
   not a library limit.
+## Failure reports
+
+- A failed match reports the furthest position the search reached and the
+  instruction it was trying there. That is a diagnostic, not a proof: with
+  alternation, the deepest point may belong to a branch that could never have
+  completed.
+- The summary line of a failure is stable; the detail line is meant for a person
+  writing a pattern.

@@ -142,3 +142,43 @@ test "a realistic access-log line fills three fields" {
   assert_eq(fields.value_at(1), "GET")
   assert_eq(fields.value_at(2), "200")
 }
+
+///|
+test "a failure reports the position it reached and the instruction it was trying" {
+  match match_line(compile_of(@registry.builtin(), "hi"), "ho") {
+    Ok(_) => abort("expected no match")
+    Err(error) =>
+      assert_eq(
+        describe_failure(error),
+        "no match: reached position 1 of 2 while trying ch(i)",
+      )
+  }
+}
+
+///|
+test "a failure at the first character names the class" {
+  match match_line(compile_of(@registry.builtin(), "%{NUMBER:n}"), "abc") {
+    Ok(_) => abort("expected no match")
+    Err(error) =>
+      assert_eq(
+        describe_failure(error),
+        "no match: reached position 0 of 3 while trying cap(0,rep(1,inf,cls(0-9)))",
+      )
+  }
+}
+
+///|
+test "a failure at the end of the line reports the full length" {
+  match
+    match_line(
+      compile_of(@registry.builtin(), "%{IP:c} %{WORD:m} %{STATUS:s}"),
+      "10.0.0.7 GET 40",
+    ) {
+    Ok(_) => abort("expected no match")
+    Err(error) =>
+      assert_eq(
+        describe_failure(error),
+        "no match: reached position 15 of 15 while trying cls(0-9)",
+      )
+  }
+}

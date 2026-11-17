@@ -29,7 +29,9 @@ pub fn match_first_with_limit(
   step_limit : Int32,
 ) -> Result[FirstMatch, MatchError] {
   let mut index = 0
-  let mut outcome : Result[FirstMatch, MatchError] = Err(NoMatch)
+  let mut outcome : Result[FirstMatch, MatchError] = Err(
+    NoMatch({ furthest: 0, line_length: 0, expected: "", }),
+  )
   let mut decided = false
   while index < programs.length() && !decided {
     match match_line_with_limit(programs[index], line, step_limit) {
@@ -39,11 +41,11 @@ pub fn match_first_with_limit(
       }
       Err(error) =>
         match error {
-          StepBudget(limit) => {
-            outcome = Err(StepBudget(limit))
+          StepBudget(limit, failure) => {
+            outcome = Err(StepBudget(limit, failure))
             decided = true
           }
-          NoMatch => ()
+          NoMatch(_) => ()
         }
     }
     index = index + 1
