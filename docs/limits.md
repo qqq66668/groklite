@@ -86,3 +86,12 @@ Not supported, and rejected at compile time where the construct is recognised:
   completed.
 - The summary line of a failure is stable; the detail line is meant for a person
   writing a pattern.
+## Line endings
+
+- A line is normalised before it is matched: one trailing carriage return and a
+  leading byte-order mark are removed. Windows input and the first line of a file
+  would otherwise fail for a reason pattern authors cannot see.
+- Nothing else is normalised. A pattern that must match a carriage return in the
+  middle of a line still can, and inner whitespace is untouched.
+- Record assembly applies the same cleaning per line, so a carriage return only
+  line closes a record instead of starting a new one.

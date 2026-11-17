@@ -7,6 +7,15 @@ version is cut.
 
 Nothing yet.
 
+## 0.1.4 - 2026-11-17
+
+- Matching: a leading byte-order mark and one trailing carriage return are removed
+  before a line is matched, so Windows input and the first line of a file no longer
+  fail for a reason that is invisible in the pattern.
+- Record assembly: the same cleaning is applied per line, so a carriage return only
+  line closes the open record instead of splitting it.
+- Tests: four regressions pin the behaviour, two for matching and two for assembly.
+
 ## 0.1.3 - 2026-11-17
 
 - Record assembly: a push-based stream assembler, with the batch entry point

@@ -101,10 +101,36 @@ fn starts_with_text(text : String, prefix : String) -> Bool {
 }
 
 ///|
+
+///|
+/// Drop a byte-order mark at the start and a carriage return at the end.
+fn clean_line(line : String) -> String {
+  let raw : Array[Char] = []
+  for c in line {
+    raw.push(c)
+  }
+  let mut start = 0
+  if raw.length() > 0 && raw[0].to_int() == 0xFEFF {
+    start = 1
+  }
+  let mut stop = raw.length()
+  if stop > start && raw[stop - 1].to_int() == 13 {
+    stop = stop - 1
+  }
+  let sb : StringBuilder = StringBuilder()
+  let mut index = start
+  while index < stop {
+    sb.write_char(raw[index])
+    index = index + 1
+  }
+  sb.to_string()
+}
+
+///|
 fn is_blank(line : String) -> Bool {
   let mut blank = true
   for c in line {
-    if c != ' ' && c != '\t' {
+    if c.to_int() != 32 && c.to_int() != 9 && c.to_int() != 13 {
       blank = false
     }
   }
@@ -167,6 +193,7 @@ pub fn StreamAssembler::feed(
   self : StreamAssembler,
   line : String,
 ) -> Array[Record] {
+  let line = clean_line(line)
   self.seen[0] = self.seen[0] + 1
   let finished : Array[Record] = []
   if is_blank(line) {

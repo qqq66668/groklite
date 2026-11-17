@@ -120,3 +120,19 @@ test "streaming and batch produce the same records" {
     index = index + 1
   }
 }
+
+///|
+test "a carriage return only line still closes the record" {
+  let records = assemble(assembler(), ["a", "\r", "b"])
+  assert_eq(records.length(), 2)
+  assert_eq(records[0].line_count(), 1)
+  assert_eq(records[1].first_line(), 3)
+}
+
+///|
+test "a trailing carriage return is not part of the record text" {
+  let records = assemble(assembler(), ["head\r", "  tail\r"])
+  assert_eq(records.length(), 1)
+  assert_eq(records[0].line_count(), 2)
+  assert_eq(records[0].text(), "head" + "\n" + "  tail")
+}

@@ -182,3 +182,20 @@ test "a failure at the end of the line reports the full length" {
       )
   }
 }
+
+///|
+test "a trailing carriage return does not block a match" {
+  match match_line(compile_of(@registry.builtin(), "%{WORD:w}"), "abc\r") {
+    Ok(fields) => assert_eq(fields.get("w"), Some("abc"))
+    Err(error) => abort(describe_failure(error))
+  }
+}
+
+///|
+test "a leading byte-order mark does not block a match" {
+  match
+    match_line(compile_of(@registry.builtin(), "%{WORD:w}"), "\u{FEFF}abc") {
+    Ok(fields) => assert_eq(fields.get("w"), Some("abc"))
+    Err(error) => abort(describe_failure(error))
+  }
+}

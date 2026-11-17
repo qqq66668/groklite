@@ -440,7 +440,51 @@ fn capture_ends(
 ///
 /// A line must match in full. A partial match is a failure, not a best-effort
 /// result, so a caller never receives half a field table.
+
+///|
+/// Strip a leading byte-order mark and one trailing carriage return.
+///
+/// A log line arrives with its terminator still attached: Windows input ends with a
+/// carriage return, and the first line of a file can start with a byte-order mark.
+/// Both would otherwise count as content and make a pattern fail at the end of the
+/// line for a reason that has nothing to do with the pattern.
+fn normalize_text(line : String) -> String {
+  let raw : Array[Char] = []
+  for c in line {
+    raw.push(c)
+  }
+  let mut start = 0
+  if raw.length() > 0 && raw[0].to_int() == 0xFEFF {
+    start = 1
+  }
+  let mut stop = raw.length()
+  if stop > start && raw[stop - 1].to_int() == 13 {
+    stop = stop - 1
+  }
+  let sb : StringBuilder = StringBuilder()
+  let mut index = start
+  while index < stop {
+    sb.write_char(raw[index])
+    index = index + 1
+  }
+  sb.to_string()
+}
+
+///|
+/// Match one line with an explicit step budget.
+///
+/// The line is normalised first: a byte-order mark at the start and one trailing
+/// carriage return are not part of the content a pattern should have to describe.
 pub fn match_line_with_limit(
+  program : @compile.Program,
+  line : String,
+  limit : Int32,
+) -> Result[Fields, MatchError] {
+  match_line_prepared(program, normalize_text(line), limit)
+}
+
+///|
+fn match_line_prepared(
   program : @compile.Program,
   line : String,
   step_limit : Int32,
