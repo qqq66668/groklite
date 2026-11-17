@@ -148,3 +148,15 @@ pub fn first_pattern_index(hit : @engine.FirstMatch) -> Int32 {
 pub fn first_fields(hit : @engine.FirstMatch) -> @engine.Fields {
   hit.first_matched_fields()
 }
+
+///|
+/// Analyse a compiled program without running it.
+pub fn analyze(program : @compile.Program) -> @compile.Analysis {
+  @compile.analyze(program)
+}
+
+///|
+/// Render a static finding as one stable line.
+pub fn describe_issue(issue : @compile.Issue) -> String {
+  @compile.describe_issue(issue)
+}
