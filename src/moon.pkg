@@ -3,4 +3,5 @@ import {
   "qqq66668/groklite/src/registry",
   "qqq66668/groklite/src/compile",
   "qqq66668/groklite/src/engine",
+  "qqq66668/groklite/src/contract",
 }

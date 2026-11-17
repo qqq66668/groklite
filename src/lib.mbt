@@ -160,3 +160,24 @@ pub fn analyze(program : @compile.Program) -> @compile.Analysis {
 pub fn describe_issue(issue : @compile.Issue) -> String {
   @compile.describe_issue(issue)
 }
+
+///|
+/// An empty field contract.
+pub fn contract() -> @contract.Contract {
+  @contract.contract()
+}
+
+///|
+/// Validate a matched field table against a contract.
+pub fn validate(
+  fields : @engine.Fields,
+  spec : @contract.Contract,
+) -> Array[@contract.Violation] {
+  @contract.validate(fields, spec)
+}
+
+///|
+/// Render a contract violation as one stable line.
+pub fn describe_violation(violation : @contract.Violation) -> String {
+  @contract.describe_violation(violation)
+}
