@@ -181,3 +181,36 @@ pub fn validate(
 pub fn describe_violation(violation : @contract.Violation) -> String {
   @contract.describe_violation(violation)
 }
+
+///|
+/// An assembler that treats an indented line as a continuation.
+pub fn assembler() -> @record.Assembler {
+  @record.assembler()
+}
+
+///|
+/// Assemble physical lines into logical records.
+pub fn assemble(
+  loader : @record.Assembler,
+  lines : Array[String],
+) -> Array[@record.Record] {
+  @record.assemble(loader, lines)
+}
+
+///|
+/// The record text, physical lines joined with a newline.
+pub fn record_text(record : @record.Record) -> String {
+  record.text()
+}
+
+///|
+/// The 1-based line number where the record starts.
+pub fn record_first_line(record : @record.Record) -> Int32 {
+  record.first_line()
+}
+
+///|
+/// How many physical lines the record covers.
+pub fn record_line_count(record : @record.Record) -> Int32 {
+  record.line_count()
+}
