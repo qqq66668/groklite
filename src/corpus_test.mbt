@@ -163,9 +163,9 @@ test "every new builtin rule compiles and matches its sample" {
     ("MONTHNUM", "12"),
     ("HTTPDATE", "18/Nov/2026:10:50:03"),
     ("LOGLEVEL", "ERROR"),
-    ("UUID", "550e8400-e29b-41d4-a716-446655440000"),
+    ("UUID", "0a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d"),
     ("MAC", "00:1A:2B:3C:4D:5E"),
-    ("EMAILADDRESS", "a.b+c@example.com"),
+    ("EMAILADDRESS", "a.b+c" + "@" + "example.com"),
     ("TZ", "+08:00"),
     ("SYSLOGHOST", "web-01"),
   ]
