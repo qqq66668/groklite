@@ -7,6 +7,19 @@ version is cut.
 
 Nothing yet.
 
+## 0.1.5 - 2026-11-18
+
+- Registry: 24 rules added, taking the built-in set from 16 to 40. Free text
+  (`DATA`, `GREEDYDATA`), quoted fields (`QS`, `QUOTEDSTRING`), numbers
+  (`POSINT`, `BASE10NUM`, `FLOAT`, `BASE16NUM`), addresses (`IPV4`, `IPV6`,
+  `HOSTNAME`, `HOSTPORT`, `SYSLOGHOST`), timestamps (`TIMESTAMP_ISO8601`, `YEAR`,
+  `DAY`, `MONTHNUM`, `HTTPDATE`, `TZ`) and identifiers (`URIPATH`, `LOGLEVEL`,
+  `UUID`, `MAC`, `EMAILADDRESS`).
+- Tests: one corpus row per new rule, asserting the rule matches its own sample.
+- Documentation: `docs/limits.md` states that the set is curated and carries no
+  equivalence promise with the upstream pattern collection; `README.md` lists the
+  rules by family.
+
 ## 0.1.4 - 2026-11-17
 
 - Matching: a leading byte-order mark and one trailing carriage return are removed

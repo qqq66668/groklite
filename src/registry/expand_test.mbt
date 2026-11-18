@@ -1,6 +1,6 @@
 ///|
-test "the built-in registry ships sixteen curated patterns" {
-  assert_eq(@registry.builtin().size(), 16)
+test "the built-in registry ships forty curated patterns" {
+  assert_eq(@registry.builtin().size(), 40)
 }
 
 ///|

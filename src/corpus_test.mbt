@@ -140,3 +140,48 @@ test "a stream of mixed formats lands on the first pattern that fits" {
     Err(error) => abort(@src.describe_match_error(error))
   }
 }
+
+///|
+test "every new builtin rule compiles and matches its sample" {
+  let cases : Array[(String, String)] = [
+    ("DATA", "anything at all"),
+    ("GREEDYDATA", "a b c"),
+    ("QS", "\"hello world\""),
+    ("QUOTEDSTRING", "\"x\""),
+    ("POSINT", "42"),
+    ("BASE10NUM", "-12.5"),
+    ("FLOAT", "-3.14"),
+    ("BASE16NUM", "0x1F"),
+    ("IPV4", "192.168.1.1"),
+    ("IPV6", "::1"),
+    ("HOSTNAME", "web-01"),
+    ("HOSTPORT", "web-01:8080"),
+    ("URIPATH", "/api/v1/users"),
+    ("TIMESTAMP_ISO8601", "2026-11-18T10:50:03"),
+    ("YEAR", "2026"),
+    ("DAY", "Mon"),
+    ("MONTHNUM", "12"),
+    ("HTTPDATE", "18/Nov/2026:10:50:03"),
+    ("LOGLEVEL", "ERROR"),
+    ("UUID", "550e8400-e29b-41d4-a716-446655440000"),
+    ("MAC", "00:1A:2B:3C:4D:5E"),
+    ("EMAILADDRESS", "a.b+c@example.com"),
+    ("TZ", "+08:00"),
+    ("SYSLOGHOST", "web-01"),
+  ]
+  let mut index = 0
+  while index < cases.length() {
+    let pair = cases[index]
+    let pattern = "%{" + pair.0 + ":v}"
+    match @src.compile_builtin(pattern) {
+      Err(_) => abort("rule does not compile: " + pair.0)
+      Ok(program) =>
+        match @src.match_line(program, pair.1) {
+          Err(_) =>
+            abort("rule does not match its sample: " + pair.0 + ": " + pair.1)
+          Ok(fields) => assert_eq(@src.field_value(fields, "v"), Some(pair.1))
+        }
+    }
+    index = index + 1
+  }
+}

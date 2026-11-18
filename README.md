@@ -209,3 +209,21 @@ pattern carries a corpus line; anything else is not shipped.
 ## Licence
 
 Apache-2.0. See `LICENSE`.
+## Built-in rules
+
+40 rules ship with the library. Bodies live in `src/registry/builtin.mbt` and every
+one has a corpus line asserting it matches its own sample.
+
+| Family | Rules |
+|---|---|
+| Text | `WORD` `NOTSPACE` `SPACE` `DATA` `GREEDYDATA` `QS` `QUOTEDSTRING` `USER` |
+| Numbers | `NUMBER` `INT` `POSINT` `BASE10NUM` `FLOAT` `BASE16NUM` |
+| Network | `IP` `IPV4` `IPV6` `HOST` `HOSTNAME` `HOSTPORT` `IPORHOST` `SYSLOGHOST` `MAC` |
+| Time | `TIME` `MONTH` `MONTHNUM` `MONTHDAY` `DAY` `YEAR` `TIMESTAMP_ISO8601` `HTTPDATE` `SYSLOGTIMESTAMP` `TZ` |
+| Request | `URIPATH` `STATUS` |
+| Identity | `UUID` `EMAILADDRESS` |
+| Logging | `PROG` `LOGLEVEL` `SYSLOGBASE` |
+
+A rule that is missing for a format you have is two lines: `registry.add("NAME",
+"body")`, then the name is available as `%{NAME}` in any pattern that shares the
+registry.

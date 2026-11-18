@@ -95,3 +95,13 @@ Not supported, and rejected at compile time where the construct is recognised:
   middle of a line still can, and inner whitespace is untouched.
 - Record assembly applies the same cleaning per line, so a carriage return only
   line closes a record instead of starting a new one.
+## Rule set scope
+
+- The built-in registry ships 40 curated rules. They cover the families the
+  bundled corpus exercises: access logs, RFC 3164 syslog, and the common field
+  shapes (free text, quoted fields, numbers, addresses, timestamps, levels, ids).
+- The set is curated, not a copy: it does not claim equivalence with the upstream
+  grok pattern collection, and a pattern written against that collection may need
+  rules this registry does not ship. Adding one is a call to `registry.add`.
+- A rule body is limited to the grammar stated above. That is what keeps every
+  rule readable and identical across the default, wasm-gc and js targets.

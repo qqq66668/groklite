@@ -23,5 +23,35 @@ pub fn builtin() -> Registry {
   registry.add("SYSLOGTIMESTAMP", "%{MONTH} +%{MONTHDAY} %{TIME}")
   registry.add("PROG", "[A-Za-z0-9_.-]+")
   registry.add("SYSLOGBASE", "%{SYSLOGTIMESTAMP} %{HOST} %{PROG}")
+  registry.add("DATA", ".*")
+  registry.add("GREEDYDATA", ".*")
+  registry.add("QS", "\"[^\"]*\"")
+  registry.add("QUOTEDSTRING", "%{QS}")
+  registry.add("POSINT", "[1-9][0-9]*")
+  registry.add("BASE10NUM", "-?[0-9]+([.][0-9]+)?")
+  registry.add("FLOAT", "-?[0-9]+[.][0-9]+")
+  registry.add("BASE16NUM", "(0[xX])?[0-9A-Fa-f]+")
+  registry.add("IPV4", "[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}")
+  registry.add("IPV6", "([0-9A-Fa-f]{0,4}:){2,7}[0-9A-Fa-f]{0,4}")
+  registry.add("HOSTNAME", "[A-Za-z0-9][A-Za-z0-9.-]*")
+  registry.add("HOSTPORT", "%{HOSTNAME}:%{POSINT}")
+  registry.add("URIPATH", "/[A-Za-z0-9_.+/-]*")
+  registry.add(
+    "TIMESTAMP_ISO8601", "[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}",
+  )
+  registry.add("YEAR", "[0-9]{4}")
+  registry.add("DAY", "(Mon|Tue|Wed|Thu|Fri|Sat|Sun)")
+  registry.add("MONTHNUM", "(0?[1-9]|1[0-2])")
+  registry.add(
+    "HTTPDATE", "[0-9]{2}/[A-Za-z]{3}/[0-9]{4}:[0-9]{2}:[0-9]{2}:[0-9]{2}",
+  )
+  registry.add("LOGLEVEL", "(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)")
+  registry.add(
+    "UUID", "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}",
+  )
+  registry.add("MAC", "([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}")
+  registry.add("EMAILADDRESS", "[A-Za-z0-9_.+-]+@[A-Za-z0-9.-]+")
+  registry.add("TZ", "(UTC|[+-][0-9]{2}:?[0-9]{2})")
+  registry.add("SYSLOGHOST", "%{IPORHOST}")
   registry
 }
