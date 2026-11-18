@@ -20,6 +20,10 @@ Nothing yet.
   equivalence promise with the upstream pattern collection; `README.md` lists the
   rules by family.
 
+- Benchmarks: a stage harness that runs one stage per process, with a `noop`
+  baseline so an external timer can be read net of startup. `docs/limits.md`
+  records how it runs and why it still publishes no throughput figure.
+
 ## 0.1.4 - 2026-11-17
 
 - Matching: a leading byte-order mark and one trailing carriage return are removed

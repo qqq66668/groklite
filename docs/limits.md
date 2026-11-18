@@ -50,6 +50,19 @@ Not supported, and rejected at compile time where the construct is recognised:
   compiled program, the search is bounded by the step budget, and that budget is a
   parameter a caller can lower.
 
+
+### How the numbers are produced
+
+- `moon run benchmarks -- <stage>` runs one stage per process: `noop`, `parse`,
+  `compile`, `match`, `analysis`, `validate`, `assemble`. `noop` exists so an
+  external timer can be read net of process startup.
+- The harness is a debug wasm build, one machine, run once, without warm-up. A
+  reading from it orders the stages against each other; it is not a throughput
+  claim about any other machine, which is why this file still publishes none.
+- The shape it shows is the shape of the design: validating a field table is far
+  cheaper than matching a line, and analysing a compiled program is the most
+  expensive stage because it walks the whole instruction tree.
+
 ## Scope
 
 - No file input, no network input, no log shipping. The library takes a string and

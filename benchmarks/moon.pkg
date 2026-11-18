@@ -1,0 +1,6 @@
+import {
+  "moonbitlang/core/env",
+  "qqq66668/groklite/src",
+}
+
+pkgtype(kind: "executable")
