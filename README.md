@@ -42,6 +42,10 @@ import {
 }
 ```
 
+This is a library, not a command-line tool. There is no binary and no `--help`: the
+entry points are the exported functions in `qqq66668/groklite/src`, and the three
+examples under `examples/` are the runnable demonstrations.
+
 One call compiles a pattern against the curated rules; one call matches a line:
 
 ```moonbit
